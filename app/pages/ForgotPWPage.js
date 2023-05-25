@@ -3,21 +3,11 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function LoginPage({ navigation }) {
+export default function ForgotPWPage() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleLogin = () => {
-      console.log('Email', email);
-      console.log('Password', password);
-    };
-
-    const handleRegister = () => {
-      navigation.navigate('Register');
-    };
 
     const handleForgotPassword = () => {
-      navigation.navigate('Forgot Password');
+      console.log('Reset password link sent to ', email);
     };
 
   return (
@@ -25,8 +15,12 @@ export default function LoginPage({ navigation }) {
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
-        <Text>Log in</Text>
-      </Text>      
+        <Text>Forgot Password?</Text>
+      </Text>
+
+      <Text style={styles.line}>
+        <Text>Enter your email to reset password.</Text>
+      </Text>
 
       <View style={styles.inputView}>
         <TextInput
@@ -37,30 +31,9 @@ export default function LoginPage({ navigation }) {
         />
       </View>
 
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          onChangeText={text => setPassword(text)}
-          value={password}
-          placeholder='Enter your password'
-          secureTextEntry={true}
-        />
-      </View>
-
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginText}>Login</Text>
+      <TouchableOpacity style={styles.linkButton} onPress={handleForgotPassword}>
+        <Text style={styles.linkText}>Send Link</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleForgotPassword}>
-        <Text style={styles.forgotButton}>Forgot Password?</Text>
-      </TouchableOpacity>
-
-      <View style={styles.row}>
-        <Text>New User? </Text>
-        <TouchableOpacity onPress={handleRegister}>
-          <Text style={styles.registerButton}>Register</Text>
-        </TouchableOpacity>
-      </View>
 
       <StatusBar style="auto" />
     </SafeAreaView>
@@ -72,11 +45,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
   },
 
   image: {
-    marginBottom: 10,
+    marginTop: 40,
+    marginBottom: 20,
     width: '100%',
     height: "40%",
   },
@@ -86,13 +59,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  line: {
+    marginBottom: 10,
+    color: "gray",
+  },
+
   inputView: {
     width: "70%",
     borderRadius: 30,
     height: 45,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginVertical: 20,
     backgroundColor: "#87cdee",
   },
 
@@ -102,7 +80,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  loginButton: {
+  linkButton: {
     width: "70%",
     borderRadius: 30,
     height: 50,
@@ -112,23 +90,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#0f52ba',
   },
 
-  loginText: {
+  linkText: {
     color: 'white',
     fontSize: 20,
-  },
-  
-  forgotButton: {
-    height: 30,
-    marginTop: 10,
-  },
-
-  row: {
-    flexDirection: "row",
-    marginTop: 10,
-  },
-
-  registerButton: {
-    fontWeight: "bold",
-    color: "red",
   },
 });

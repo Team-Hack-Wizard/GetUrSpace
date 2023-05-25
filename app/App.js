@@ -1,24 +1,22 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import ForgotPWPage from './pages/ForgotPWPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import StackNavigator from './StackNavigator';
-import { NavigationContainer } from '@react-navigation/native';
+import AuthNavigator from './AuthNavigator';
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <LoginPage>
-        <StackNavigator/>
-      </LoginPage>
-    </NavigationContainer>
+    <>
+      <AuthNavigator/>
+    </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

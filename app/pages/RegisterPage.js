@@ -3,21 +3,18 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function LoginPage({ navigation }) {
+export default function RegisterPage({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
+    const handleRegister = () => {
+      console.log('User registered!');
       console.log('Email', email);
       console.log('Password', password);
     };
 
-    const handleRegister = () => {
-      navigation.navigate('Register');
-    };
-
-    const handleForgotPassword = () => {
-      navigation.navigate('Forgot Password');
+    const handleLogin = () => {
+        navigation.navigate('Login');
     };
 
   return (
@@ -25,7 +22,7 @@ export default function LoginPage({ navigation }) {
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
-        <Text>Log in</Text>
+        <Text>Register</Text>
       </Text>      
 
       <View style={styles.inputView}>
@@ -47,18 +44,24 @@ export default function LoginPage({ navigation }) {
         />
       </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginText}>Login</Text>
-      </TouchableOpacity>
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          onChangeText={text => setPassword(text)}
+          value={password}
+          placeholder='Confirm your password'
+          secureTextEntry={true}
+        />
+      </View>
 
-      <TouchableOpacity onPress={handleForgotPassword}>
-        <Text style={styles.forgotButton}>Forgot Password?</Text>
+      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+        <Text style={styles.registerText}>Register</Text>
       </TouchableOpacity>
 
       <View style={styles.row}>
-        <Text>New User? </Text>
-        <TouchableOpacity onPress={handleRegister}>
-          <Text style={styles.registerButton}>Register</Text>
+        <Text>Existing User? </Text>
+        <TouchableOpacity onPress={handleLogin}>
+          <Text style={styles.loginButton}>Login</Text>
         </TouchableOpacity>
       </View>
 
@@ -72,10 +75,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
   },
 
   image: {
+    marginTop: 40,
     marginBottom: 10,
     width: '100%',
     height: "40%",
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
     height: 45,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     backgroundColor: "#87cdee",
   },
 
@@ -102,24 +105,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  loginButton: {
+  registerButton: {
     width: "70%",
     borderRadius: 30,
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 15,
+    marginVertical: 15,
     backgroundColor: '#0f52ba',
   },
 
-  loginText: {
+  registerText: {
     color: 'white',
     fontSize: 20,
-  },
-  
-  forgotButton: {
-    height: 30,
-    marginTop: 10,
   },
 
   row: {
@@ -127,7 +125,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
-  registerButton: {
+  loginButton: {
     fontWeight: "bold",
     color: "red",
   },
