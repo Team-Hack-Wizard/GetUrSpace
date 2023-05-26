@@ -10,6 +10,28 @@ export default function LoginPage({ navigation }) {
     const handleLogin = () => {
       console.log('Email', email);
       console.log('Password', password);
+      navigation.navigate('Main')
+    };
+
+    const login = () => {
+      const strongRegex = new RegExp("^[a-zA-Z0-9_.+-]+@u.nus.edu");
+
+      if (!strongRegex.test(email)) {
+          showMessage(MESSAGE.email)
+          return false;
+      }
+
+      if ((!email) || (!password)) {
+          showMessage({
+            message: "Invalid email or password entered. Try again.",
+          })
+          return false;
+      }
+      
+      if (password.length < 8) {
+          showMessage(MESSAGE.password);
+          return false;
+      }
     };
 
     const handleRegister = () => {
@@ -109,7 +131,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 15,
-    backgroundColor: '#0f52ba',
+    backgroundColor: '#094074',
   },
 
   loginText: {
