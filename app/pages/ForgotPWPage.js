@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 15,
-    backgroundColor: '#0f52ba',
+    backgroundColor: '#094074',
   },
 
   linkText: {

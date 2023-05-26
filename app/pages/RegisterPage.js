@@ -1,11 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native';
+// import { createUserWithEmailAndPassword } from 'firebase/auth';
+// import { auth } from '../firebase';
 
 export default function RegisterPage({ navigation }) {
     const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
+    const [samePassword, confirmPassword] = useState('');
 
     const handleRegister = () => {
       console.log('User registered!');
@@ -17,8 +20,22 @@ export default function RegisterPage({ navigation }) {
         navigation.navigate('Login');
     };
 
+    const register = () => {
+      if (email === "" || name === "" || password === "" || samePassword === "") {
+        Alert.alert('Invalid details', 'Please ensure no fields are empty!', [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ], {cancelable: false});
+      }
+      createUserWithEmailAndPassword(auth)
+    }
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
@@ -37,6 +54,15 @@ export default function RegisterPage({ navigation }) {
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
+          onChangeText={text => setName(text)}
+          value={name}
+          placeholder='Enter your name'
+        />
+      </View>
+
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
           onChangeText={text => setPassword(text)}
           value={password}
           placeholder='Enter your password'
@@ -47,8 +73,8 @@ export default function RegisterPage({ navigation }) {
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setPassword(text)}
-          value={password}
+          onChangeText={text => confirmPassword(text)}
+          value={samePassword}
           placeholder='Confirm your password'
           secureTextEntry={true}
         />
@@ -66,7 +92,7 @@ export default function RegisterPage({ navigation }) {
       </View>
 
       <StatusBar style="auto" />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -86,7 +112,7 @@ const styles = StyleSheet.create({
 
   main: {
     fontSize: 30,
-    marginBottom: 20,
+    marginBottom: 15,
   },
 
   inputView: {
@@ -111,8 +137,8 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 15,
-    backgroundColor: '#0f52ba',
+    marginVertical: 10,
+    backgroundColor: '#094074',
   },
 
   registerText: {
@@ -122,7 +148,7 @@ const styles = StyleSheet.create({
 
   row: {
     flexDirection: "row",
-    marginTop: 10,
+    // marginTop: 10,
   },
 
   loginButton: {
