@@ -50,8 +50,22 @@ export default function RegisterPage({ navigation }) {
     navigation.navigate('Login');
   };
 
+    const register = () => {
+      if (email === "" || name === "" || password === "" || samePassword === "") {
+        Alert.alert('Invalid details', 'Please ensure no fields are empty!', [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ], {cancelable: false});
+      }
+      createUserWithEmailAndPassword(auth)
+    }
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
@@ -64,6 +78,15 @@ export default function RegisterPage({ navigation }) {
           onChangeText={text => setEmail(text)}
           value={email}
           placeholder='Enter your UserID@u.nus.edu'
+        />
+      </View>
+
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          onChangeText={text => setName(text)}
+          value={name}
+          placeholder='Enter your name'
         />
       </View>
 
@@ -99,7 +122,7 @@ export default function RegisterPage({ navigation }) {
       </View>
 
       <StatusBar style="auto" />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -119,7 +142,7 @@ const styles = StyleSheet.create({
 
   main: {
     fontSize: 30,
-    marginBottom: 20,
+    marginBottom: 15,
   },
 
   inputView: {
@@ -144,8 +167,8 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 15,
-    backgroundColor: '#0f52ba',
+    marginVertical: 10,
+    backgroundColor: '#094074',
   },
 
   registerText: {
@@ -155,7 +178,7 @@ const styles = StyleSheet.create({
 
   row: {
     flexDirection: "row",
-    marginTop: 10,
+    // marginTop: 10,
   },
 
   loginButton: {

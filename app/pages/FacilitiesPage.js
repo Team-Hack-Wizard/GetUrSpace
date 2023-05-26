@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View, TextInput } from 'react-native'
+import { StyleSheet, Text, View, TextInput, FlatList, ScrollView } from 'react-native'
 import React, { useLayoutEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import { SearchBar } from 'react-native-elements';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FacilitiesPage() {
     const navigation = useNavigation();
@@ -12,7 +14,7 @@ export default function FacilitiesPage() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-        headerShown:true,
+        headerShown:false,
         headerTitleStyle: {
             fontSize: 20,
             fontWeight: "bold",
@@ -21,22 +23,38 @@ export default function FacilitiesPage() {
   },[])
 
   return (
-    <View>
-      <TextInput
-        style={styles.search}
+    <SafeAreaView styles={styles.container}>
+      <Text style={styles.main}>
+        <Text>Facilities</Text>
+      </Text>
+
+      <SearchBar
         onChangeText={text => setSearchQuery(text)}
         value={searchQuery}
         placeholder='Search'
+        autoCorrect={false}
+        lightTheme
+        round
       />
-    </View>
+
+      <ScrollView>
+        
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  search: {
-    width: "70%",
-    borderRadius: 30,
-    height: 45,
-    backgroundColor: 'gray',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
+
+  main:{ 
+    fontSize: 30,
+    marginTop: 20,
+    marginBottom: 20,
+    textAlign: "center",
   },
 })
