@@ -2,20 +2,53 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { setDoc, doc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '../config/firebase';
 
 export default function RegisterPage({ navigation }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleRegister = () => {
-      console.log('User registered!');
-      console.log('Email', email);
-      console.log('Password', password);
-    };
+  const errMsg = (msg) => Alert.alert(
+    "Invalid Detials",
+    msg,
+    [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      },
+      { text: "OK", onPress: () => console.log("OK Pressed") }
+    ],
+    { cancelable: false }
+  );
 
-    const handleLogin = () => {
-        navigation.navigate('Login');
-    };
+  const handleRegister = () => {
+    if (email === "" || password === "" || phone === "") {
+      errMsg("Please fill in all the fields!");
+    } else if (email.length < 10 || email.slice(-10) !== "@u.nus.edu"){
+      errMsg("Please register a valid NUS email!");
+    } else if (password !== confirmPassword) {
+      errMsg("Passwords do not match!");
+    } else {
+      createUserWithEmailAndPassword(auth, email, password).then((userCredentials) => {
+        const user = userCredentials._tokenResponse.email;
+        const uid = auth.currentUser.uid;
+        setDoc(doc(db, "users", `${uid}`), {
+          email: user,
+          phone: phone
+        })
+      }).catch((error) => { console.log(error); });
+
+      navigation.navigate('Login')
+    }
+  }
+
+  const handleLogin = () => {
+    navigation.navigate('Login');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,7 +56,7 @@ export default function RegisterPage({ navigation }) {
 
       <Text style={styles.main}>
         <Text>Register</Text>
-      </Text>      
+      </Text>
 
       <View style={styles.inputView}>
         <TextInput
@@ -47,8 +80,8 @@ export default function RegisterPage({ navigation }) {
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setPassword(text)}
-          value={password}
+          onChangeText={text => setConfirmPassword(text)}
+          value={confirmPassword}
           placeholder='Confirm your password'
           secureTextEntry={true}
         />
