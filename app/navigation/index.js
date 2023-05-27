@@ -1,3 +1,5 @@
-import {AuthNavigator} from "./AuthNavigator";
+import AppStack from './AppStack';
+import AuthStack from './AuthStack';
+import RootNavigator from './RootNavigator';
 
-export { AuthNavigator };
+export { AppStack, AuthStack, RootNavigator };

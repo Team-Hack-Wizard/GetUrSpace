@@ -1,16 +1,41 @@
 import { StatusBar } from 'expo-status-bar';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { auth } from '../config/firebase';
 
 export default function LoginPage({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const errMsg = (msg) => Alert.alert(
+      "Unverified Account",
+      msg, 
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ],
+      { cancelable: false }
+    );
+
     const handleLogin = () => {
-      console.log('Email', email);
-      console.log('Password', password);
-      navigation.navigate('Main')
+      if (email === "" || password === "") {
+        errMsg("Please ensure no fields are empty!");
+      } else {
+        signInWithEmailAndPassword(auth, email, password).catch((error) => { 
+          errMsg(error.message);
+        }).then( userCredential => {
+          if (! userCredential.user.emailVerified) {
+            errMsg("Please verify your email before logging in!");
+          }
+        });
+
+      }
     };
 
     const login = () => {

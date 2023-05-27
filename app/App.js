@@ -1,11 +1,9 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import ForgotPWPage from "./pages/ForgotPWPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import StackNavigator from "./StackNavigator";
-import AuthNavigator from "./navigation/AuthNavigator";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { AuthenticatedUserProvider } from "./providers";
+import { RootNavigator } from './navigation/RootNavigator';
 
 export default function App() {
   return (
