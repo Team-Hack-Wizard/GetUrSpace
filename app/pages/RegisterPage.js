@@ -1,38 +1,69 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native';
-// import { createUserWithEmailAndPassword } from 'firebase/auth';
-// import { auth } from '../firebase';
+import { setDoc, doc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { auth, db } from '../config/firebase';
 
 export default function RegisterPage({ navigation }) {
-    const [email, setEmail] = useState('');
-    const [name, setName] = useState('');
-    const [password, setPassword] = useState('');
-    const [samePassword, confirmPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleRegister = () => {
-      console.log('User registered!');
-      console.log('Email', email);
-      console.log('Password', password);
-    };
+  const errMsg = (msg) => Alert.alert(
+    "Invalid Detials",
+    msg,
+    [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      },
+      { text: "OK", onPress: () => console.log("OK Pressed") }
+    ],
+    { cancelable: false }
+  );
 
-    const handleLogin = () => {
-        navigation.navigate('Login');
-    };
-
-    const register = () => {
-      if (email === "" || name === "" || password === "" || samePassword === "") {
-        Alert.alert('Invalid details', 'Please ensure no fields are empty!', [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ], {cancelable: false});
-      }
-      createUserWithEmailAndPassword(auth)
+  const handleRegister = () => {
+    if (email === "" || password === "" || confirmPassword === "" || name === "") {
+      errMsg("Please ensure no fields are empty!");
+    } else if (email.length < 10 || email.slice(-10) !== "@u.nus.edu") {
+      errMsg("Please register with a valid NUS email!");
+    } else if (password !== confirmPassword) {
+      errMsg("Passwords do not match!");
+    } else {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredentials) => {
+          const user = userCredentials.user;
+          const uid = user.uid;
+          setDoc(doc(db, "users", `${uid}`), {
+            email: email,
+            name: name,
+            group: [1]
+          });
+        })
+        .then(() => {
+          sendEmailVerification(auth.currentUser);
+          alert("Verification email has been sent, please verify your email before logging in!");
+          navigation.navigate('Login');
+        })
+        .then(() => {
+          if (! auth.currentUser.emailVerified) {
+            auth.signOut();
+          }
+        }).catch((error) => {
+          errMsg(error.message);
+          console.log(error.message);
+        });
     }
+  }
+
+  const handleLogin = () => {
+    navigation.navigate('Login');
+  };
+
+
 
   return (
     <View style={styles.container}>
@@ -40,7 +71,7 @@ export default function RegisterPage({ navigation }) {
 
       <Text style={styles.main}>
         <Text>Register</Text>
-      </Text>      
+      </Text>
 
       <View style={styles.inputView}>
         <TextInput
@@ -73,8 +104,8 @@ export default function RegisterPage({ navigation }) {
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => confirmPassword(text)}
-          value={samePassword}
+          onChangeText={text => setConfirmPassword(text)}
+          value={confirmPassword}
           placeholder='Confirm your password'
           secureTextEntry={true}
         />

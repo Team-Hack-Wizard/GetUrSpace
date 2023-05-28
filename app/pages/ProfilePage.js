@@ -2,10 +2,11 @@ import { StyleSheet, Text, Image, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import TextBox from '../components/TextBox'
+import { auth, db } from '../config/firebase';
 
 export default function ProfilePage({ navigation }) {
     const handleLogOut = () => {
-      navigation.navigate('Login', {screen: 'Login'});
+      auth.signOut();
     };
 
   return (
