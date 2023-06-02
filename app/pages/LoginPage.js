@@ -15,10 +15,10 @@ export default function LoginPage({ navigation }) {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
+          //onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { text: "OK", onPress: () => console.log("OK Pressed") }
+        { text: "OK"}
       ],
       { cancelable: false }
     );
@@ -27,12 +27,15 @@ export default function LoginPage({ navigation }) {
       if (email === "" || password === "") {
         errMsg("Please ensure no fields are empty!");
       } else {
-        signInWithEmailAndPassword(auth, email, password).catch((error) => { 
-          errMsg(error.message);
-        }).then( userCredential => {
+        signInWithEmailAndPassword(auth, email, password)
+        .then( userCredential => {
           if (! userCredential.user.emailVerified) {
             errMsg("Please verify your email before logging in!");
+            auth.signOut();
           }
+        })
+        .catch((error) => { 
+          errMsg(error.message);
         });
 
       }

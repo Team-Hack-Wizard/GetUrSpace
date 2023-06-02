@@ -1,14 +1,43 @@
 import { StatusBar } from 'expo-status-bar';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { auth } from '../config/firebase';
 
 export default function ForgotPWPage() {
-    const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
 
-    const handleForgotPassword = () => {
-      console.log('Reset password link sent to ', email);
-    };
+  const errMsg = (title, msg) => Alert.alert(
+    title,
+    msg,
+    [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      },
+      { text: "OK", onPress: () => console.log("OK Pressed") }
+    ],
+    { cancelable: false }
+  );
+
+  const handleForgotPassword = () => {
+    if (email === "") {
+      errMsg("Error!", "Please ensure no fields are empty!"); 
+      return;
+    }
+    
+    sendPasswordResetEmail(auth, email)
+    .then(() => { 
+      errMsg("", "A password reset link has been sent to your email!");
+    })
+    .catch((error) => {
+      errMsg("Error!", error.code + "\n" + error.message);
+      console.log(error.message);
+      return;
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>

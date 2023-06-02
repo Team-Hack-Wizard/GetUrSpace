@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native';
-import { setDoc, doc } from 'firebase/firestore';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { auth, db } from '../config/firebase';
+import { setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, deleteUser, sendEmailVerification, updateProfile } from 'firebase/auth';
+import { auth, db } from '../config';
 
 export default function RegisterPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -17,15 +17,15 @@ export default function RegisterPage({ navigation }) {
     [
       {
         text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
+        //onPress: () => console.log("Cancel Pressed"),
         style: "cancel"
       },
-      { text: "OK", onPress: () => console.log("OK Pressed") }
+      { text: "OK" }
     ],
     { cancelable: false }
   );
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (email === "" || password === "" || confirmPassword === "" || name === "") {
       errMsg("Please ensure no fields are empty!");
     } else if (email.length < 10 || email.slice(-10) !== "@u.nus.edu") {
@@ -33,29 +33,47 @@ export default function RegisterPage({ navigation }) {
     } else if (password !== confirmPassword) {
       errMsg("Passwords do not match!");
     } else {
-      createUserWithEmailAndPassword(auth, email, password)
+      await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredentials) => {
           const user = userCredentials.user;
           const uid = user.uid;
-          setDoc(doc(db, "users", `${uid}`), {
+          setDoc(doc(db, "users", uid), {
             email: email,
             name: name,
-            group: [1]
+            groups: ["NUS"]
           });
         })
-        .then(() => {
-          sendEmailVerification(auth.currentUser);
-          alert("Verification email has been sent, please verify your email before logging in!");
-          navigation.navigate('Login');
+        .then(async () => {
+          const user = auth.currentUser;
+          await updateProfile(user, {
+            displayName: name
+          });
+          console.log(user);
+          sendEmailVerification(auth.currentUser)
         })
         .then(() => {
-          if (! auth.currentUser.emailVerified) {
-            auth.signOut();
-          }
-        }).catch((error) => {
+          const NUSRef = doc(db, "groups", "NUS");
+          updateDoc(NUSRef, {
+            users: arrayUnion(auth.currentUser.uid)
+          });
+        })
+        .catch((error) => {
           errMsg(error.message);
+          console.log(error.code);
           console.log(error.message);
+          deleteUser(auth.currentUser).catch((error) => {
+            console.log("Error deleting user")
+            console.log(error.code);
+            console.log(error.message);
+          });
         });
+
+      alert("Verification email has been sent, please verify your email before logging in!");
+      navigation.navigate('Login');
+      if (auth.currentUser && !auth.currentUser.emailVerified) {
+        console.log("User is signed in, signing out...")
+        auth.signOut();
+      }
     }
   }
 
