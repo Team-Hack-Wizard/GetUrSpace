@@ -1,13 +1,25 @@
 import { StyleSheet, Text, Image, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import TextBox from '../components/TextBox'
 import { auth, db } from '../config/firebase';
+import { doc, onSnapshot } from "firebase/firestore"; 
 
 export default function ProfilePage({ navigation }) {
-    const handleLogOut = () => {
-      auth.signOut();
-    };
+  const handleLogOut = () => {
+    auth.signOut();
+  };
+  
+  const [name, setName] = useState("");
+  const [groups, setGroups] = useState(""); 
+  const userRef = doc(db, "users", auth.currentUser.uid);
+
+  const unsubscribe = onSnapshot(userRef, (doc) => {
+    const data = doc.data();
+    setName(doc.get("name"));
+    setGroups(data.groups.join(", "));
+  })
+  unsubscribe();
 
   return (
     <SafeAreaView styles={styles.container}>
@@ -22,7 +34,7 @@ export default function ProfilePage({ navigation }) {
       </Text>
 
       <TextBox
-        data="Xiao Ming"
+        data={name}
       />
 
       <Text style={styles.text}>
@@ -30,7 +42,7 @@ export default function ProfilePage({ navigation }) {
       </Text>
 
       <TextBox
-        data="xxx@u.nus.edu"
+        data={auth.currentUser.email}
       />
 
       <Text style={styles.text}>
@@ -38,7 +50,7 @@ export default function ProfilePage({ navigation }) {
       </Text>
 
       <TextBox
-        data="PGPR"
+        data={groups}
       />
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogOut}>

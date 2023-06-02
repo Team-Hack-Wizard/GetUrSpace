@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function TextBox(props) {
-    const {data} = props;
+export default function TextBox({data}) {
+    
   return (
     <View style={styles.box}>
       <Text style={styles.text}>{data}</Text>
