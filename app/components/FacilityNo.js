@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function TextBox({data}) {
+export default function FacilityNo({data}) {
   return (
     <View style={styles.box}>
       <Text style={styles.text}>{data}</Text>
@@ -11,16 +11,18 @@ export default function TextBox({data}) {
 
 const styles = StyleSheet.create({
   box: {
-    backgroundColor: "#B1DDF1",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 10,
-    width: '90%',
+    backgroundColor: "#094074",
+    width: '95%',
+    height: 40,
+    marginVertical: 20,
     alignSelf: "center",
+    justifyContent: "center",
   },
-
+    
   text: {
-    fontSize: 18,
-    fontWeight: "bold",
+    color: 'white',
+    fontSize: 15,
+    textAlign: "left",
+    marginLeft: 20,
   },
 });

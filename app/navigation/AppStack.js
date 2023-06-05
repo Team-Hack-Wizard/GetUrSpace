@@ -5,19 +5,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
-import FacilitiesPage from '../pages/FacilitiesPage';
 import BookingsPage from '../pages/BookingsPage';
 import ProfilePage from '../pages/ProfilePage';
+import FacilitiesStack from './FacilitiesStack';
 
 export default function AppStack() {
   const Tab = createBottomTabNavigator();
-  const Stack = createNativeStackNavigator();
 
   return (
     <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }}>
       <Tab.Screen
-        name='Facilities'
-        component={FacilitiesPage}
+        name='FacilitiesStack'
+        component={FacilitiesStack}
         initialParams={{ screen: "Facilities" }}
         options={{
           tabBarLabel: 'Facilities',
