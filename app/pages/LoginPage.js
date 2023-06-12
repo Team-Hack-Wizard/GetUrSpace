@@ -84,6 +84,7 @@ export default function LoginPage({ navigation }) {
           onChangeText={text => setEmail(text)}
           value={email}
           placeholder='Enter your UserID@u.nus.edu'
+          selectionColor='red'
         />
       </View>
 
@@ -94,6 +95,7 @@ export default function LoginPage({ navigation }) {
           value={password}
           placeholder='Enter your password'
           secureTextEntry={true}
+          selectionColor='red'
         />
       </View>
 

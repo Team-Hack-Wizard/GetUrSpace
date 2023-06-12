@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
 import { setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, deleteUser, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { auth, db } from '../config';
@@ -84,7 +84,7 @@ export default function RegisterPage({ navigation }) {
 
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior='padding'>
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
@@ -97,6 +97,7 @@ export default function RegisterPage({ navigation }) {
           onChangeText={text => setEmail(text)}
           value={email}
           placeholder='Enter your UserID@u.nus.edu'
+          selectionColor='red'
         />
       </View>
 
@@ -106,6 +107,7 @@ export default function RegisterPage({ navigation }) {
           onChangeText={text => setName(text)}
           value={name}
           placeholder='Enter your name'
+          selectionColor='red'
         />
       </View>
 
@@ -116,6 +118,7 @@ export default function RegisterPage({ navigation }) {
           value={password}
           placeholder='Enter your password'
           secureTextEntry={true}
+          selectionColor='red'
         />
       </View>
 
@@ -126,6 +129,7 @@ export default function RegisterPage({ navigation }) {
           value={confirmPassword}
           placeholder='Confirm your password'
           secureTextEntry={true}
+          selectionColor='red'
         />
       </View>
 
@@ -141,7 +145,7 @@ export default function RegisterPage({ navigation }) {
       </View>
 
       <StatusBar style="auto" />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -153,7 +157,7 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    marginTop: 40,
+    marginTop: 90,
     marginBottom: 10,
     width: '100%',
     height: "40%",

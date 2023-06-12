@@ -57,6 +57,7 @@ export default function ForgotPWPage() {
           onChangeText={text => setEmail(text)}
           value={email}
           placeholder='Enter your UserID@u.nus.edu'
+          selectionColor='red'
         />
       </View>
 
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    marginTop: 40,
+    marginTop: 65,
     marginBottom: 20,
     width: '100%',
     height: "40%",

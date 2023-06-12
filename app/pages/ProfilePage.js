@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import TextBox from '../components/TextBox'
 import { auth, db } from '../config/firebase';
 import { doc, onSnapshot } from "firebase/firestore"; 
+import { useEffect } from 'react';
 
-export default function ProfilePage({ navigation }) {
+export default function ProfilePage() {
   const handleLogOut = () => {
     auth.signOut();
   };
@@ -14,12 +15,14 @@ export default function ProfilePage({ navigation }) {
   const [groups, setGroups] = useState(""); 
   const userRef = doc(db, "users", auth.currentUser.uid);
 
-  const unsubscribe = onSnapshot(userRef, (doc) => {
-    const data = doc.data();
-    setName(doc.get("name"));
-    setGroups(data.groups.join(", "));
-  })
-  unsubscribe();
+  useEffect(() => {
+    const unsubscribe = onSnapshot(userRef, (doc) => {
+      const data = doc.data();
+      setName(doc.get("name"));
+      setGroups(data.groups.join(", "));
+    })
+    return unsubscribe;
+  }, []);
 
   return (
     <SafeAreaView styles={styles.container}>

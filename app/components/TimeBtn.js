@@ -1,0 +1,31 @@
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import React from 'react'
+
+export default function TimeBtn({id, time, selected, onPress}) {
+    const handlePress = () => {
+        onPress(id);
+    }
+
+  return (
+    <TouchableOpacity 
+        style={[styles.button, { backgroundColor: selected ? '#094074' : '#E6E6E6' }]} 
+        onPress={handlePress}
+        disabled={selected}>
+      <Text style={[styles.text, { color: selected ? 'white' : 'black' }]}>{time}</Text>
+    </TouchableOpacity>
+  )
+}
+
+const styles = StyleSheet.create({
+  button: {
+    padding: 12,
+    borderRadius: 10,
+    marginVertical: 5,
+    alignItems: "center",
+  },
+
+  text: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+})
