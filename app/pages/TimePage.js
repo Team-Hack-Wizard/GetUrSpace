@@ -174,7 +174,6 @@ export default function TimePage({ navigation, route }) {
       setLoading(false);
     }
     getFacility();
-    //setLoading(false);
   }, [bookings]);
 
   
@@ -205,7 +204,6 @@ export default function TimePage({ navigation, route }) {
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {available.map((timeArr, index1) => (
-            <>
               <View key={index1}>
                 <FacilityNo data={"Facility " + (index1 + 1)} />
                 <View style={styles.buttonGroup}>
@@ -220,7 +218,6 @@ export default function TimePage({ navigation, route }) {
                   ))}
                 </View>
               </View>
-            </>
           ))}
         </ScrollView>
 
