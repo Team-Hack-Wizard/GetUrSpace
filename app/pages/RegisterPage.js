@@ -40,7 +40,8 @@ export default function RegisterPage({ navigation }) {
           setDoc(doc(db, "users", uid), {
             email: email,
             name: name,
-            groups: ["NUS"]
+            // everyone added to nus group, groups store the group ids
+            groups: ["S3Y8U7GJXnRmTyVeDBAX"]
           });
         })
         .then(async () => {

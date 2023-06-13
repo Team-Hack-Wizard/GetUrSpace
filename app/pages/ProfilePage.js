@@ -3,23 +3,34 @@ import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import TextBox from '../components/TextBox'
 import { auth, db } from '../config/firebase';
-import { doc, onSnapshot } from "firebase/firestore"; 
+import { doc, getDoc, onSnapshot } from "firebase/firestore"; 
 import { useEffect } from 'react';
 
 export default function ProfilePage() {
-  const handleLogOut = () => {
-    auth.signOut();
-  };
-  
   const [name, setName] = useState("");
   const [groups, setGroups] = useState(""); 
   const userRef = doc(db, "users", auth.currentUser.uid);
 
+  const handleLogOut = () => {
+    auth.signOut();
+  };
+  
+  // this updates the name and groups displayed on the profile page
+  // whenever there is a change in user document
   useEffect(() => {
-    const unsubscribe = onSnapshot(userRef, (doc) => {
-      const data = doc.data();
-      setName(doc.get("name"));
-      setGroups(data.groups.join(", "));
+    // listens to changes in the user document
+    const unsubscribe = onSnapshot(userRef, async (user) => {
+      const newName = await user.get("name");
+      if (name != newName) setName(newName);
+      let groupNames = [];
+      const groupsArr = await user.get("groups");
+      await Promise.all(groupsArr.map(async (groupId) => {
+        const groupRef = doc(db, "groups", groupId);
+        const group = await getDoc(groupRef);
+        const name = await group.get("name");
+        groupNames.push(name);
+      }));
+      setGroups(groupNames.join(", "));
     })
     return unsubscribe;
   }, []);

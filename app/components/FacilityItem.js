@@ -1,22 +1,22 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
 
-export default function FacilityItem({ name, navigation, selected, setSelected }) {
+export default function FacilityItem({ navigation, facilityId, facilityName, 
+    groupId, booking }) {
 
-    const handlePress = () => {
-      setSelected(!selected);
-      navigation.navigate('Date');
-    }
-
-    useEffect(() => {
-      setSelected(false);
-    }, [name]);
+  const handlePress = () => {
+    navigation.navigate('Date', {
+      ...booking,
+      facilityId: facilityId,
+      groupId: groupId,
+    });
+  }
 
   return (
     <TouchableOpacity 
-      style={[styles.facilityItem, {backgroundColor: selected ? "#B1DDF1" : "#EBEBEB" }]}
+      style={styles.facilityItem}
       onPress={handlePress}>
-      <Text style={styles.facilityName}>{name}</Text>
+      <Text style={styles.facilityName}>{facilityName}</Text>
     </TouchableOpacity>
   )
 }
