@@ -1,85 +1,136 @@
-import { StyleSheet, Text, FlatList, Dimensions } from 'react-native'
+import {
+  StyleSheet, Text, FlatList, Dimensions, ActivityIndicator,
+  View
+} from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { SearchBar } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FacilityNo from '../components/FacilityNo';
 import FacilityItem from '../components/FacilityItem';
-
-const nusFacilitiesData = [
-  {id: 1, name: 'Multi Purpose Hall'},
-  {id: 2, name: 'Meeting Rooms'},
-  {id: 3, name: 'Dance Studios'},
-  {id: 4, name: 'BBQ Pit'},
-  {id: 5, name: 'Gym'},
-  {id: 6, name: 'Study Pods'},
-];
-
-const altFacilitiesData = [
-  {id: 1, name: 'BBQ Pit'},
-  {id: 2, name: 'Gym'},
-  {id: 3, name: 'Study Pods'},
-  {id: 4, name: 'Meeting Rooms'},
-];
+import { auth, db } from '../config/firebase';
+import { doc, onSnapshot, getDoc } from "firebase/firestore";
 
 export default function FacilitiesPage() {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredNUSFacilities, setFilteredNUSFacilities] = useState(nusFacilitiesData);
-    const [filteredAltFacilities, setFilteredAltFacilities] = useState(altFacilitiesData);
-    const [resetSelection, setResetSelection] = useState(false);  
+  const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  // tracks the groups the user is in
+  const [groups, setGroups] = useState([]);
+  // tracks the list of facilities in each group in the following format
+  // [{id: group1Id, name: groupName,
+  //  data: [{id: 1, name: "facility1"}, ...]}, ...]
+  const [listData, setListData] = useState([]);
+  const booking = {
+    userId: auth.currentUser.uid,
+    facilityId: '',
+    groupId: '',
+    date: '',
+    time: '',
+    facilityNumber: 0,
+  };
 
-    const handleSearch = (text) => {
-      setSearchQuery(text);
+  const userRef = doc(db, "users", auth.currentUser.uid);
+  // get snapshots of user's groups
+  useEffect(() => {
+    const unsubscribe = onSnapshot(userRef, async (doc) => {
+      const groupIds = await doc.get("groups");
+      if (groupIds.length !== groups.length) {
+        //console.log("groups changed");
+        setGroups([...groupIds]); // array of groupIds of groups user is in
+        if (!loading) setLoading(true);
+      }
+    })
+    return unsubscribe;
+  }, []);
 
-      const filteredNUS = nusFacilitiesData.filter((facility) => 
-        facility.name.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredNUSFacilities(filteredNUS);
+  // listens to any changes in user's groups and reload accordingly
+  // in the process, loading will be set to true
+  useEffect(() => {
+    //based on the groups, get the list of facilities sorted by the groups
+    setLoading(true);
+    let curListData = [];
+    // we want to pass in [{id: group1Id, name: groupName,
+    //  data: [{id: 1, name: "facility1"}, {id: 2, name: "facility2"}, ...]}, ...]
+    async function getListData() {
+      for (const groupId of groups) {  // for each group
+        let groupName;
+        let groupDoc;
+        try {
+          groupDoc = await getDoc(doc(db, "groups", groupId));
+          groupName = await groupDoc.get("name");
+        } catch (error) {
+          console.log("Error getting group name:", error);
+        }
 
-      const filteredAlt = altFacilitiesData.filter((facility) => 
-        facility.name.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredAltFacilities(filteredAlt);
+        // get the list of facilities in the group then push them into the 
+        // listData array with {id: groupId, data: {facilities,...}}
+        // where facility is an object of {id: facilityId, name: facilityName}
+        try {
+          const facilityIds = await groupDoc.get("facilities");
+          const facilities = await Promise.all(facilityIds.map(async (facilityId) => {
+            const facilityDoc = await getDoc(doc(db, "facilities", facilityId));
+            return {
+              id: facilityId,
+              name: await facilityDoc.get("name"),
+            };
+          }));
+          curListData.push({
+            id: groupId,
+            name: groupName,
+            data: facilities,
+          });
+        } catch (error) {
+          console.log("Error setting listData:", error);
+        }
+      }
+      setListData(curListData);
+      setLoading(false);
     }
-      
-    useLayoutEffect(() => {
-      navigation.setOptions({
-          headerShown:false,
-          headerTitleStyle: {
-              fontSize: 20,
-              fontWeight: "bold",
-          }
-      })
-    },[])
+    getListData();
+  }, [groups]);
 
-    useEffect(() => {
-      if (route?.params?.resetSelection) {
-        setResetSelection(true);
+
+  // Actual filtering of data is done in render item method of the flatList
+  // where only the facilities that match the search query will be rendered
+  // or all rendered when query is emtpy
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+  }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+      headerTitleStyle: {
+        fontSize: 20,
+        fontWeight: "bold",
       }
-    }, [route?.params?.resetSelection]);
+    })
+  }, [])
 
-    useEffect(() => {
-      if (resetSelection) {
-        const updatedNUSFacilities = filteredNUSFacilities.map((facility) => ({
-          ...facility,
-          selected: false,
-        }));
-    
-        const updatedAltFacilities = filteredAltFacilities.map((facility) => ({
-          ...facility,
-          selected: false,
-        }));
-    
-        setFilteredNUSFacilities(updatedNUSFacilities);
-        setFilteredAltFacilities(updatedAltFacilities);
-        setResetSelection(false);
-      }
-    }, [resetSelection]);
+  const windowHeight = Dimensions.get('window').height;
 
-    const windowHeight = Dimensions.get('window').height;
-
+  if (loading) {
+    return (
+      <SafeAreaView styles={styles.container}>
+        <Text style={styles.main}>
+          <Text>Facilities</Text>
+        </Text>
+        <SearchBar
+          onChangeText={handleSearch}
+          value={searchQuery}
+          placeholder='Search'
+          autoCorrect={false}
+          lightTheme
+          round
+        />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Loading</Text>
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView styles={styles.container}>
       <Text style={styles.main}>
@@ -96,35 +147,28 @@ export default function FacilitiesPage() {
       />
 
       <FlatList
-        data={[
-          { title: 'NUS', data: filteredNUSFacilities },
-          { title: 'PGPR', data: filteredAltFacilities },
-        ]}
-        keyExtractor={(item) => item.title}
+        data={listData}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <>
-            <FacilityNo data={item.title} />
-            {item.data.map((facility) => (
-              <FacilityItem
-                key={facility.id}
-                name={facility.name}
-                navigation={navigation}
-                selected={facility.selected}
-                setSelected={(value) => {
-                  const updatedData = item.data.map((f) => {
-                    if (f.id === facility.id) {
-                      return { ...f, selected: value };
-                    }
-                    return f;
-                  });
-                  if (item.title === 'NUS') {
-                    setFilteredNUSFacilities(updatedData);
-                  } else if (item.title === 'PGPR') {
-                    setFilteredAltFacilities(updatedData);
-                  }
-                }}
-              />
-            ))}
+            <FacilityNo data={item.name} />
+            {item.data.map((facility) => {
+              if (searchQuery === '' ||
+                facility.name.toLowerCase()
+                  .includes(searchQuery.toLowerCase())) {
+                return (
+                  <FacilityItem
+                    key={facility.id}
+                    navigation={navigation}
+                    facilityId={facility.id}
+                    facilityName={facility.name}
+                    groupId={item.id}
+                    booking={{ ...booking }}
+                  />
+                )
+              }
+            })
+            }
           </>
         )}
         nestedScrollEnabled
@@ -141,7 +185,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  main:{ 
+  main: {
     fontSize: 30,
     marginTop: 20,
     marginBottom: 20,

@@ -27,10 +27,9 @@ const db = getFirestore(app);
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase
 
 // persist auth state with AsyncStorage from react-native-community
-// const auth = initializeAuth(app, {
-//   persistence: getReactNativePersistence(AsyncStorage),
-// });
-// for ease of testing, we will not use presistence
-const auth = getAuth(app);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
+//const auth = getAuth(app);
 
 export { auth, db };

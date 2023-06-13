@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 import AuthStack from './AuthStack';
 import AppStack from './AppStack';
 import { AuthenticatedUserContext } from '../providers';
 import { auth } from '../config';
-import { View, Text } from 'react-native';
 
 export const RootNavigator = () => {
   const { user, setUser } = useContext(AuthenticatedUserContext);
@@ -17,6 +17,7 @@ export const RootNavigator = () => {
     const unsubscribeAuthStateChanged = onAuthStateChanged(
       auth,
       authenticatedUser => {
+        // only set user if authenticatedUser exists and email is verified
         if (authenticatedUser && authenticatedUser.emailVerified) {
           setUser(authenticatedUser);
         } else {
@@ -34,6 +35,7 @@ export const RootNavigator = () => {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Loading</Text>
+        <ActivityIndicator size="large" />
       </View>
     );
   }

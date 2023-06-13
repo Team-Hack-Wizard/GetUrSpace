@@ -4,20 +4,26 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar } from 'react-native-calendars';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function DatePage({ navigation }) {
+export default function DatePage({ navigation, route }) {
+    const booking = route.params;
+    const [selectedDate, setSelectedDate] = useState('');
+
     const handleContinue = () => {
-      navigation.navigate('Time');
+      navigation.navigate('Time', {
+        ...booking,
+        date: selectedDate,
+      });
+      // pass down booking info to the next page
     };
 
     const handleReturn = () => {
-      navigation.navigate('Facilities', {resetSelection: true});
+      navigation.navigate('Facilities');
     }
-
-    const [selectedDate, setSelectedDate] = useState('');
 
     const handleDayPress = (day) => {
       setSelectedDate(day.dateString);
-    };
+      // dataString is in the format YYYY-MM-DD
+    };    
 
     const isContinueDisabled = selectedDate === '';
 
