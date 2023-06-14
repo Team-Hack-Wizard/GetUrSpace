@@ -1,8 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
+import {
+  StyleSheet, Text, TextInput, View, Image, TouchableOpacity, 
+  Alert, KeyboardAvoidingView, Platform 
+} from 'react-native';
 import { setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { createUserWithEmailAndPassword, deleteUser, sendEmailVerification, updateProfile } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword, deleteUser, sendEmailVerification, updateProfile
+} from 'firebase/auth';
 import { auth, db } from '../config';
 
 export default function RegisterPage({ navigation }) {
@@ -85,7 +90,10 @@ export default function RegisterPage({ navigation }) {
 
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior='padding'>
+    <KeyboardAvoidingView 
+      style={styles.container} 
+      behavior={Platform == 'ios' ? 'padding' : 'height'}
+    >
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
@@ -155,6 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
+    justifyContent:'flex-end',
   },
 
   image: {
