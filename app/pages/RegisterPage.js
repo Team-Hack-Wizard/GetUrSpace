@@ -12,7 +12,7 @@ export default function RegisterPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const errMsg = (msg) => Alert.alert(
-    "Invalid Detials",
+    "Invalid Details",
     msg,
     [
       {
@@ -158,10 +158,10 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    marginTop: 90,
+    marginTop: 60,
     marginBottom: 10,
     width: '100%',
-    height: "40%",
+    height: "35%",
   },
 
   main: {
@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
 
   row: {
     flexDirection: "row",
-    // marginTop: 10,
   },
 
   loginButton: {

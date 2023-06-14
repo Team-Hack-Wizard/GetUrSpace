@@ -202,7 +202,7 @@ export default function TimePage({ navigation, route }) {
           <Text style={styles.selectTime}>Select Time</Text>
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
           {available.map((timeArr, index1) => (
               <View key={index1}>
                 <FacilityNo data={"Facility " + (index1 + 1)} />
@@ -267,6 +267,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignContent: 'center',
+    marginHorizontal: 10,
   },
 
   bookNowBtn: {
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignSelf: "center",
     justifyContent: "center",
-    marginTop: 75,
+    marginTop: 30,
     marginBottom: 30,
   },
 

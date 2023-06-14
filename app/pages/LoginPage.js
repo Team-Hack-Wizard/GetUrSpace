@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
 
@@ -71,7 +71,7 @@ export default function LoginPage({ navigation }) {
     };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior='padding'>
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
@@ -115,7 +115,7 @@ export default function LoginPage({ navigation }) {
       </View>
 
       <StatusBar style="auto" />
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -124,13 +124,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
   },
 
   image: {
+    marginTop: 60,
     marginBottom: 10,
     width: '100%',
-    height: "40%",
+    height: "35%",
   },
 
   main: {
