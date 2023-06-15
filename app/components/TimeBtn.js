@@ -22,7 +22,7 @@ export default function TimeBtn({id, time, selected, onPress}) {
 
 const styles = StyleSheet.create({
   button: {
-    padding: 12,
+    padding: 10,
     borderRadius: 10,
     marginVertical: 5,
     alignItems: "center",
