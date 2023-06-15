@@ -106,6 +106,9 @@ const styles = StyleSheet.create({
     marginLeft: 70,
     alignItems: "center",
     justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    right: 15,
   },
 
   cancelText: {
