@@ -64,7 +64,6 @@ export default function TimePage({ navigation, route }) {
     // empty doc ref to be used later for transaction writing
     const bookingRef = doc(collection(db, "bookings"));
     try {
-      console.log(1);
       const facilityRef = doc(db, "facilities", newBooking.facilityId);
       await runTransaction(db, async (transaction) => {
         const facilityDoc = await transaction.get(facilityRef);
@@ -101,7 +100,6 @@ export default function TimePage({ navigation, route }) {
           bookings: bookingIds
         });
       });
-      console.log("Transaction successfully committed!");
       errMsg("Success", "Your booking is successful! You can view it at the bookings page.");
       navigation.navigate('Facilities');
     } catch (e) {

@@ -13,7 +13,7 @@ export default function BookingsPage() {
   // [{ id: '1', facility: 'MPH', venue: 'PGPR', date: '8 July', time: '11.30'}, ... ]
   const [bookings, setBookings] = useState([]);
 
-  const handleCancelBooking = async (bookingId, facilityId, date, time) => {
+  const handleCancelBooking = async (bookingId, facilityId, facilityNumber, date, time) => {
     try {
       // the onSnapshot listener below will update the bookings state after database is updated
       // so we don't need to update the bookings state here
@@ -23,7 +23,7 @@ export default function BookingsPage() {
       // bookings: {date1: {time1: [bookingId1, bookingId2], time2: [...],...},
       //      date2: {time1: [bookingId3, bookingId4], ...}...}
       const facilityBookings = { ...((await getDoc(facilityRef)).data().bookings) };
-      facilityBookings[date][time] = (facilityBookings[date][time]).filter((booking) => booking != bookingId);
+      facilityBookings[date][time] = (facilityBookings[date][time]).filter((num) => num != facilityNumber);
       updateDoc(facilityRef, {
         "bookings": facilityBookings
       });

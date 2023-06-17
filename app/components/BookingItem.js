@@ -17,7 +17,7 @@ export default function BookingItem({ id, facility, facilityId, facilityNumber, 
         {
           text: 'Confirm',
           style: 'destructive',
-          onPress: () => onCancel(id, facilityId, date, time),
+          onPress: () => onCancel(id, facilityId, facilityNumber, date, time),
         },
       ],
       { cancelable: false }
