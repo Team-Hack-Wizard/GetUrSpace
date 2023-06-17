@@ -19,7 +19,7 @@ export default function TimePage({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   // selected is in the format "i j" where i is the facility number(0 indexing) and j is the time index
   const [selected, setSelected] = useState(-1);
-  // bookings stores the list of bookings for the facility on the date (stored in curBooking)
+  // bookings stores the list of bookings for the facility on the date (that is stored in curBooking)
   const [bookings, setBookings] = useState([]);
   // available stores the list of available timings for the facility on the date
   // format: [[8,9,10], [...], ...] where ith array is the available timings for the ith facility
@@ -28,7 +28,9 @@ export default function TimePage({ navigation, route }) {
   // object of booking: {
   //   userId: auth.currentUser.uid,
   //   facilityId: FilLED IN BY FACILITIES PAGE,
+  //   facilityName: FILLED IN BY FACILITIES PAGE,
   //   groupId: FILLED IN BY FACILITIES PAGE,
+  //   groupName: FILLED IN BY FACILITIES PAGE,
   //   date: FILLED IN BY DATE PAGE,
   //   time: '',
   //   facilityNumber: 0,
@@ -62,39 +64,45 @@ export default function TimePage({ navigation, route }) {
     // empty doc ref to be used later for transaction writing
     const bookingRef = doc(collection(db, "bookings"));
     try {
+      console.log(1);
       const facilityRef = doc(db, "facilities", newBooking.facilityId);
       await runTransaction(db, async (transaction) => {
         const facilityDoc = await transaction.get(facilityRef);
-        // bookingIds is in the format {
-        //  date: [bookingId1, bookingId2, ...],
-        //  date2: [bookingId3, bookingId4, ...], ....
-        // }
-        const bookingIds = { ...facilityDoc.data().bookings };
-        if (!bookingIds[newBooking.date]) {
-          bookingIds[newBooking.date] = [bookingRef.id];
-        } else {
-          bookingIds[newBooking.date] = [...(bookingIds[newBooking.date]), bookingRef.id];
-        }
         if (!facilityDoc.exists()) {
           throw "Unknown error, this facility does not exist!";
         }
+        // bookingIds is in the format {
+        //  date: { time1: [facilityNum1, facilityNum2, ...], time2: [...], ...},
+        //  date2: {time3: [facilityNum3, facilityNum4, ...]}, ....
+        // }
+        // create the new booking object to update into the bookings field of facility
+        const bookingIds = { ...(facilityDoc.data().bookings)};
         // check if the booking slot has already been taken by searching 
         // for the same booking details in the bookings collection
-        const q = query(collection(db, "bookings"), where("facilityId", "==", newBooking.facilityId),
-          where("date", "==", newBooking.date), where("time", "==", newBooking.time),
-          where("facilityNumber", "==", newBooking.facilityNumber));
-        const snapShot = await getDocs(q);
-        // there should only be 0 or 1 booking from the query
-        if (snapShot.docs.length > 0) {
-          throw "This booking slot has already been taken!";
+        if (!bookingIds[newBooking.date]) {
+          // if the date is not in the bookings field, create a new object
+          // then add the booking id to the array of date: {time: []}
+          bookingIds[newBooking.date] = {};
+          bookingIds[newBooking.date][newBooking.time] = [newBooking.facilityNumber];
+        } else if (!bookingIds[newBooking.date][newBooking.time]) {
+          // if the time is not in the bookings field, create a new array with the booking id
+          bookingIds[newBooking.date][newBooking.time] = [newBooking.facilityNumber];
+        } else if (!bookingIds[newBooking.date][newBooking.time].includes(newBooking.facilityNumber)) {
+          // if the facilityNumber is not in the array, add it to the array of bookings
+          bookingIds[newBooking.date][newBooking.time].push(newBooking.facilityNumber);
         } else {
-          transaction.set(bookingRef, newBooking);
-          transaction.update(facilityRef, {
-            bookings: bookingIds
-          });
+          // It must then be the case that the booking id is already in the array, 
+          // the slot has been taken
+          throw "This booking slot has already been taken!";
         }
+
+        transaction.set(bookingRef, newBooking);
+        transaction.update(facilityRef, {
+          bookings: bookingIds
+        });
       });
       console.log("Transaction successfully committed!");
+      errMsg("Success", "Your booking is successful! You can view it at the bookings page.");
       navigation.navigate('Facilities');
     } catch (e) {
       console.log("Transaction failed: ", e);
@@ -116,7 +124,7 @@ export default function TimePage({ navigation, route }) {
       where("date", "==", curBooking.date), orderBy("time"));
     const unsubscribe = onSnapshot(q, async (snapShot) => {
       let newBookings = await Promise.all(snapShot.docs.map(doc => doc.data()));
-      if (newBookings) setBookings(newBookings);
+      setBookings(newBookings);
     });
     return unsubscribe;
   }, []);
@@ -128,7 +136,10 @@ export default function TimePage({ navigation, route }) {
 
   // on changes to bookings, update the available timings
   useEffect(() => {
-    if (! loading) setLoading(true);
+    if (!loading) setLoading(true);
+    const moment = require('moment-timezone');
+    const sgDate = moment().tz("Asia/Singapore").format("YYYY-MM-DD");
+    const sgHour = moment().tz("Asia/Singapore").hours();
     let newAvailable = [];
     let facility = {};
     // get the number of facilities
@@ -150,7 +161,10 @@ export default function TimePage({ navigation, route }) {
         console.log("facitlity number not a number type, facilityId: ", curBooking.facilityId);
       }
       /////////////////////////////////////////////////////////////////////
-      const timeArr = range(facility.startTime, facility.endTime, TIMEINTERVAL);
+      // if user is booking for today, the minTime is the current hour
+      const minTime = (curBooking.date == sgDate ? 
+        Math.max(sgHour, facility.startTime) : facility.startTime);
+      const timeArr = range(minTime, facility.endTime, TIMEINTERVAL);
       // duplicate the array for the number of facilities
       for (let i = 0; i < facility.number; i++) {
         newAvailable.push([...timeArr]);
@@ -176,7 +190,7 @@ export default function TimePage({ navigation, route }) {
     getFacility();
   }, [bookings]);
 
-  
+
   if (loading === true) {
     return (
       <SafeAreaView style={styles.container}>
@@ -204,20 +218,20 @@ export default function TimePage({ navigation, route }) {
 
         <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
           {available.map((timeArr, index1) => (
-              <View key={index1}>
-                <FacilityNo data={"Facility " + (index1 + 1)} />
-                <View style={styles.buttonGroup}>
-                  {timeArr.map((time, index2) => (
-                    <TimeBtn
-                      key={`${index1} ${index2}`}
-                      id={`${index1} ${index2}`}
-                      time={time}
-                      selected={selected === `${index1} ${index2}`}
-                      onPress={handlePress}
-                    />
-                  ))}
-                </View>
+            <View key={index1}>
+              <FacilityNo data={"Facility " + (index1 + 1)} />
+              <View style={styles.buttonGroup}>
+                {timeArr.map((time, index2) => (
+                  <TimeBtn
+                    key={`${index1} ${index2}`}
+                    id={`${index1} ${index2}`}
+                    time={time}
+                    selected={selected === `${index1} ${index2}`}
+                    onPress={handlePress}
+                  />
+                ))}
               </View>
+            </View>
           ))}
         </ScrollView>
 

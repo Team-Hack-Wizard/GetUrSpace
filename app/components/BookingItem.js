@@ -2,46 +2,53 @@ import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native'
 import React from 'react'
 import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons'
 
-export default function BookingItem({id, facility, venue, date, time, onCancel}) {
-    //confirmation message to cancel booking
-    const handleCancelBooking = () => {
-      Alert.alert(
-        'Cancel Booking',
-        'Are you sure you want to cancel this booking?',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Confirm',
-            style: 'destructive',
-            onPress: () => onCancel(id),
-          },
-        ],
-        { cancelable: false }
-      );
-    };
+export default function BookingItem({ id, facility, facilityId, facilityNumber, venue,
+  date, time, onCancel }) {
+  //confirmation message to cancel booking
+  const handleCancelBooking = () => {
+    Alert.alert(
+      'Cancel Booking',
+      'Are you sure you want to cancel this booking?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          style: 'destructive',
+          onPress: () => onCancel(id, facilityId, date, time),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
-    //dynamic rendering of icons depending on which facility is being booked
-    const renderIcon = (facility) => {
-      switch (facility) {
-        case 'MPH':
-          return <Ionicons name="basketball-sharp" size={50} color="black" />;
-        case 'MPSH':
-          return <Ionicons name="basketball-sharp" size={50} color="black" />;
-        case 'Meeting Room':
-          return <MaterialIcons name="meeting-room" size={50} color="black" />;
-        case 'Study Room':
-          return <FontAwesome5 name="door-closed" size={50} color="black" />;
-        case 'Gym':
-          return <FontAwesome5 name="dumbbell" size={50} color="black" />;
-        case 'BBQ Pit':
-          return <MaterialIcons name="outdoor-grill" size={50} color="black" />;
-        default:
-          return null;
-      }
+  // convert time in number to string of HH:00
+  const parseTime = (time) => {
+    const timeString = time < 10 ? `0${time}:00` : `${time}:00`;
+    return timeString;
+  }
+
+  //dynamic rendering of icons depending on which facility is being booked
+  const renderIcon = (facility) => {
+    switch (facility) {
+      case 'MPH':
+        return <Ionicons name="basketball-sharp" size={50} color="black" />;
+      case 'MPSH':
+        return <Ionicons name="basketball-sharp" size={50} color="black" />;
+      case 'Meeting Room':
+        return <MaterialIcons name="meeting-room" size={50} color="black" />;
+      case 'Study Room':
+        return <FontAwesome5 name="door-closed" size={50} color="black" />;
+      case 'Gym':
+        return <FontAwesome5 name="dumbbell" size={50} color="black" />;
+      case 'BBQ Pit':
+        return <MaterialIcons name="outdoor-grill" size={50} color="black" />;
+      default:
+        return null;
     }
+  }
 
   return (
     <View style={styles.box}>
@@ -50,13 +57,14 @@ export default function BookingItem({id, facility, venue, date, time, onCancel})
       <View style={styles.innerBox}>
         <View style={styles.smallBox}>
           <Text style={styles.body}>Venue: {venue}</Text>
+          <Text style={styles.body}>Facility Number: {facilityNumber}</Text>
           <Text style={styles.body}>Date: {date}</Text>
-          <Text style={styles.body}>Time: {time}</Text>
+          <Text style={styles.body}>Time: {parseTime(time)}</Text>
         </View>
         <TouchableOpacity style={styles.cancelBtn} onPress={handleCancelBooking}>
           <Text style={styles.cancelText}>Cancel</Text>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -70,7 +78,7 @@ const styles = StyleSheet.create({
 
   iconContainer: {
     position: 'absolute',
-    top: 40,
+    top: 50,
     left: 15,
   },
 

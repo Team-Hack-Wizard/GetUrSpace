@@ -5,8 +5,12 @@ export default function TimeBtn({id, time, selected, onPress}) {
   const handlePress = () => {
       onPress(id);
   }
-  // pad 0 to time if time < 10
-  time = time < 10 ? "0"+time : time;
+   
+  // convert time in number to string of HH:00
+  const parseTime = (time) => {
+    const timeString = time < 10 ? `0${time}:00` : `${time}:00`;
+    return timeString;
+  }
 
   return (
     <View style={styles.buttonWrapper}>
@@ -14,7 +18,7 @@ export default function TimeBtn({id, time, selected, onPress}) {
           style={[styles.button, { backgroundColor: selected ? '#094074' : '#E6E6E6' }]} 
           onPress={handlePress}
           disabled={selected}>
-        <Text style={[styles.text, { color: selected ? 'white' : 'black' }]}>{time+":00"}</Text>
+        <Text style={[styles.text, { color: selected ? 'white' : 'black' }]}>{parseTime(time)}</Text>
       </TouchableOpacity> 
     </View>
   )

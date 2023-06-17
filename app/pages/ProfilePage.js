@@ -24,11 +24,8 @@ export default function ProfilePage() {
       if (name != newName) setName(newName);
       let groupNames = [];
       const groupsArr = await user.get("groups");
-      await Promise.all(groupsArr.map(async (groupId) => {
-        const groupRef = doc(db, "groups", groupId);
-        const group = await getDoc(groupRef);
-        const name = await group.get("name");
-        groupNames.push(name);
+      await Promise.all(groupsArr.map(async (group) => {
+        groupNames.push(group.groupName);
       }));
       setGroups(groupNames.join(", "));
     })
