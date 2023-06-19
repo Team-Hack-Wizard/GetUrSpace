@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react'
 import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons'
 
 export default function FacilityItem({ navigation, facilityId, facilityName, 
-    groupId, booking }) {
+    groupId, groupName, booking }) {
 
   const handlePress = () => {
     navigation.navigate('Date', {
       ...booking,
       facilityId: facilityId,
+      facilityName: facilityName,
       groupId: groupId,
+      groupName: groupName,
     });
   }
 
