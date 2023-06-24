@@ -1,9 +1,46 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
-import { setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { createUserWithEmailAndPassword, deleteUser, sendEmailVerification, updateProfile } from 'firebase/auth';
+import {
+  StyleSheet, Text, TextInput, View, Image, TouchableOpacity, 
+  Alert, KeyboardAvoidingView 
+} from 'react-native';
+import { setDoc, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import {
+  createUserWithEmailAndPassword, deleteUser, sendEmailVerification, updateProfile
+} from 'firebase/auth';
 import { auth, db } from '../config';
+
+const DEFAULT_GROUP_IDS = ["S3Y8U7GJXnRmTyVeDBAX"];
+// get group info on the default groups, to pass in to the groups under newly createduser document
+async function getDefaultGroups() {
+  let defaultGroups = [];
+  for (const groupId of DEFAULT_GROUP_IDS) {
+    let curGroup = {};
+    const groupSnap = await getDoc(doc(db, "groups", groupId));
+    if (! groupSnap.exists()) {
+      console.log("No such document!");
+      continue;
+    } 
+    curGroup.groupId = groupId;
+    curGroup.groupName = await groupSnap.get("name");
+    const facilityIds = await groupSnap.get("facilities");
+    let facilities = [];
+    for (const facilityId of facilityIds) {
+      const facilitySnap = await getDoc(doc(db, "facilities", facilityId));
+      if (! facilitySnap.exists()) {
+        console.log("No such document!");
+        continue;
+      } 
+      facilities.push({
+        facilityId: facilityId,
+        facilityName: await facilitySnap.get("name"),
+      });
+    }
+    curGroup.facilities = facilities;
+    defaultGroups.push(curGroup);
+  }
+  return defaultGroups;
+}
 
 export default function RegisterPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -33,48 +70,52 @@ export default function RegisterPage({ navigation }) {
     } else if (password !== confirmPassword) {
       errMsg("Passwords do not match!");
     } else {
-      await createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredentials) => {
+      try {
+        await createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredentials) => {
           const user = userCredentials.user;
           const uid = user.uid;
-          setDoc(doc(db, "users", uid), {
+          await setDoc(doc(db, "users", uid), {
             email: email,
             name: name,
-            // everyone added to nus group, groups store the group ids
-            groups: ["S3Y8U7GJXnRmTyVeDBAX"]
+            // everyone added to default groups
+            groups: await getDefaultGroups(),
           });
+          return user;
         })
-        .then(async () => {
-          const user = auth.currentUser;
+        .then(async (user) => {
           await updateProfile(user, {
             displayName: name
           });
           console.log(user);
-          sendEmailVerification(auth.currentUser)
+          sendEmailVerification(user)
         })
-        .then(() => {
-          const NUSRef = doc(db, "groups", "NUS");
-          updateDoc(NUSRef, {
+
+        // update users in each default group
+        for (const groupId of DEFAULT_GROUP_IDS) {
+          const groupRef = doc(db, "groups", groupId);
+          updateDoc(groupRef, {
             users: arrayUnion(auth.currentUser.uid)
           });
-        })
-        .catch((error) => {
-          errMsg(error.message);
+        }
+
+        alert("Verification email has been sent, please verify your email before logging in!");
+        navigation.navigate('Login');
+        if (auth.currentUser && !auth.currentUser.emailVerified) {
+          console.log("User is signed in, signing out...")
+          auth.signOut();
+        }
+      } catch (error) {
+        errMsg(error.message);
+        console.log(error.code);
+        console.log(error.message);
+        deleteUser(auth.currentUser).catch((error) => {
+          console.log("Error deleting user")
           console.log(error.code);
           console.log(error.message);
-          deleteUser(auth.currentUser).catch((error) => {
-            console.log("Error deleting user")
-            console.log(error.code);
-            console.log(error.message);
-          });
         });
+      };
 
-      alert("Verification email has been sent, please verify your email before logging in!");
-      navigation.navigate('Login');
-      if (auth.currentUser && !auth.currentUser.emailVerified) {
-        console.log("User is signed in, signing out...")
-        auth.signOut();
-      }
     }
   }
 
