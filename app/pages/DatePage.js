@@ -43,12 +43,14 @@ export default function DatePage({ navigation, route }) {
         </Text>
       </View>
 
-      <Calendar
-        style={styles.calendar}
-        onDayPress={handleDayPress}
-        markedDates={{ [selectedDate]: { selected: true, disableTouchEvent: true } }}
-        minDate={minDate}
-      />
+      <View style={styles.calendarContainer}>
+        <Calendar
+          style={styles.calendar}
+          onDayPress={handleDayPress}
+          markedDates={{ [selectedDate]: { selected: true, disableTouchEvent: true } }}
+          minDate={minDate}
+        />
+      </View>
 
       <TouchableOpacity
         style={[styles.continueBtn, { backgroundColor: isContinueDisabled ? '#E6E6E6' : '#094074' }]}
@@ -80,10 +82,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 80,
   },
 
+  calendarContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 50,
+  },
+
   calendar: {
     aspectRatio: 1.2,
-    justifyContent: "flex-start",
-    marginVertical: 50,
+    // justifyContent: "flex-start",
+    // marginVertical: 50,
+    width: "100%",
   },
 
   continueBtn: {
