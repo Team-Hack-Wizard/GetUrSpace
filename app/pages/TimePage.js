@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { MaterialIcons } from '@expo/vector-icons'
 import TimeBtn from '../components/TimeBtn'
-import FacilityNo from '../components/FacilityNo';
+import Title from '../components/Title';
 import { db } from '../config/firebase';
 import {
   collection, query, where, doc, onSnapshot, getDoc, getDocs,
@@ -217,7 +217,7 @@ export default function TimePage({ navigation, route }) {
         <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
           {available.map((timeArr, index1) => (
             <View key={index1}>
-              <FacilityNo data={"Facility " + (index1 + 1)} />
+              <Title data={"Facility " + (index1 + 1)} />
               <View style={styles.buttonGroup}>
                 {timeArr.map((time, index2) => (
                   <TimeBtn

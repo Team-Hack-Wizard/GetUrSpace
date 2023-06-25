@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function FacilityNo({data}) {
+export default function Title({data}) {
   return (
     <View style={styles.box}>
       <Text style={styles.text}>{data}</Text>
