@@ -64,6 +64,14 @@ export default function ProfilePage() {
         data={groups}
       />
 
+      <Text style={styles.text}>
+        <Text>Role</Text>
+      </Text>
+
+      <TextBox
+        data="User"
+      />
+
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogOut}>
         <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
@@ -87,7 +95,7 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    marginBottom: 40,
+    marginBottom: 20,
     width: 100,
     height: 100,
     resizeMode: "contain",
@@ -96,7 +104,7 @@ const styles = StyleSheet.create({
 
   text: {
     fontSize: 25,
-    marginBottom: 15,
+    marginBottom: 10,
     marginLeft: 20,
   },
 
@@ -106,7 +114,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignSelf: "center",
     justifyContent: "center",
-    marginVertical: 50,
+    marginTop: 20,
     backgroundColor: '#094074',
   },
 

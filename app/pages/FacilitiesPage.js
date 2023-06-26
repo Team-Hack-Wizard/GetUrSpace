@@ -6,7 +6,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { SearchBar } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import FacilityNo from '../components/FacilityNo';
+import Title from '../components/Title';
 import FacilityItem from '../components/FacilityItem';
 import { auth, db } from '../config/firebase';
 import { doc, onSnapshot, getDoc, getDocs, collection, updateDoc } from "firebase/firestore";
@@ -122,7 +122,7 @@ export default function FacilitiesPage() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <>
-            <FacilityNo data={item.name} />
+            <Title data={item.name} />
             {item.data.map((facility) => {
               if (searchQuery === '' ||
                 facility.name.toLowerCase()
