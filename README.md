@@ -115,9 +115,7 @@ Additionally, we want users to verify their email addresses before logging in to
 
 
 
-<img src="./readmeImages/authentication_flow.png" alt="authentication flowr" >
-
-
+<img src="./readmeImages/authentication_flow.png" alt="authentication flow" >
 
 
 
