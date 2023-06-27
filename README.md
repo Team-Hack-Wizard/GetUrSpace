@@ -419,9 +419,10 @@ We have conducted some user testing on potential users, NUS students who may wan
 
 <table style="width: 100%">
     <colgroup>
+       <col span="1" style="width: 35%;">
        <col span="1" style="width: 15%;">
-       <col span="1" style="width: 70%;">
-       <col span="1" style="width: 15%;">
+       <col span="1" style="width: 30%;">
+       <col span="1" style="width: 20%;">
     </colgroup>
   <tr>
    <td>
@@ -439,11 +440,10 @@ We have conducted some user testing on potential users, NUS students who may wan
    </td>
    <td>Creating account
    </td>
-   <td>User-friendliness: Satisfactory
-<p>
-Intuitiveness: Satisfactory
-<p>
-Smoothness: Satisfactory
+   <td>
+    <p> User-friendliness: Satisfactory
+        Intuitiveness: Satisfactory
+        Smoothness: Satisfactory
    </td>
    <td>Keying in a long password can result in overflowing to 2nd line and out of textbox
    </td>
@@ -453,11 +453,10 @@ Smoothness: Satisfactory
    </td>
    <td>Log in to the app
    </td>
-   <td>User-friendliness: Satisfactory
-<p>
-Intuitiveness: Satisfactory
-<p>
-Smoothness: Satisfactory
+   <td>
+    <p> User-friendliness: Satisfactory
+        Intuitiveness: Satisfactory
+        Smoothness: Satisfactory
    </td>
    <td>
    </td>
@@ -467,11 +466,10 @@ Smoothness: Satisfactory
    </td>
    <td>See the groups
    </td>
-   <td>User-friendliness: Satisfactory
-<p>
-Intuitiveness: Satisfactory
-<p>
-Smoothness: Satisfactory
+   <td>
+    <p> User-friendliness: Satisfactory
+        Intuitiveness: Satisfactory
+        Smoothness: Satisfactory
    </td>
    <td>
    </td>
@@ -481,11 +479,10 @@ Smoothness: Satisfactory
    </td>
    <td>See the list of facilities he can book
    </td>
-   <td>User-friendliness: Satisfactory
-<p>
-Intuitiveness: Satisfactory
-<p>
-Smoothness: Satisfactory
+   <td>
+    <p> User-friendliness: Satisfactory
+        Intuitiveness: Satisfactory
+        Smoothness: Satisfactory
    </td>
    <td>There is a slight lag when selecting different facilities on the facilities page
    </td>
@@ -495,11 +492,10 @@ Smoothness: Satisfactory
    </td>
    <td>Book any facility
    </td>
-   <td>User-friendliness: Satisfactory
-<p>
-Intuitiveness: Satisfactory
-<p>
-Smoothness: Satisfactory
+   <td>
+    <p> User-friendliness: Satisfactory
+        Intuitiveness: Satisfactory
+        Smoothness: Satisfactory
    </td>
    <td>There is a slight lag when selecting date on the date page
    </td>
@@ -511,11 +507,10 @@ Smoothness: Satisfactory
 <p>
 Cancel bookings.
    </td>
-   <td>User-friendliness: Satisfactory
-<p>
-Intuitiveness: Satisfactory
-<p>
-Smoothness: Satisfactory
+   <td>
+    <p> User-friendliness: Satisfactory
+        Intuitiveness: Satisfactory
+        Smoothness: Satisfactory
    </td>
    <td>Good to have a notification for upcoming bookings.
    </td>
