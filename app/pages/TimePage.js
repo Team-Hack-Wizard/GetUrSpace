@@ -9,7 +9,7 @@ import TimeBtn from '../components/TimeBtn'
 import Title from '../components/Title';
 import { db } from '../config/firebase';
 import {
-  collection, query, where, doc, onSnapshot, getDoc, getDocs,
+  collection, query, where, doc, onSnapshot, getDoc, 
   orderBy, runTransaction, deleteDoc
 } from "firebase/firestore";
 
