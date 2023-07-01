@@ -126,10 +126,7 @@ export default function RegisterPage({ navigation }) {
 
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform == 'ios' ? 'padding' : 'height'}
-    >
+    <KeyboardAvoidingView style={styles.container} behavior='padding'>
       <Image style={styles.image} source={require('../assets/icon.png')} />
 
       <Text style={styles.main}>
@@ -199,7 +196,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent:'flex-end',
   },
 
   image: {
