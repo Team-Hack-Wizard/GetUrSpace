@@ -1,5 +1,6 @@
 import AppStack from './AppStack';
 import AuthStack from './AuthStack';
+import AdminAppStack from './AdminAppStack';
 import RootNavigator from './RootNavigator';
 
-export { AppStack, AuthStack, RootNavigator };
+export { AdminAppStack, AuthStack, RootNavigator };

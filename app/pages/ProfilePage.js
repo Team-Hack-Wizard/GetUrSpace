@@ -90,14 +90,14 @@ const styles = StyleSheet.create({
   main:{ 
     fontSize: 30,
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: "center",
   },
 
   image: {
-    marginBottom: 20,
-    width: 100,
-    height: 100,
+    marginBottom: 10,
+    width: 80,
+    height: 80,
     resizeMode: "contain",
     alignSelf: "center",
   },
