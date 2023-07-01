@@ -7,6 +7,7 @@ import AuthStack from './AuthStack';
 import AppStack from './AppStack';
 import { AuthenticatedUserContext } from '../providers';
 import { auth } from '../config';
+import AdminAppStack from './AdminAppStack';
 
 export const RootNavigator = () => {
   const { user, setUser } = useContext(AuthenticatedUserContext);
@@ -42,7 +43,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      {user ? <AppStack /> : <AuthStack />}
+      {user ? <AdminAppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };

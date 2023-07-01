@@ -86,7 +86,7 @@ export default function BookingsPage() {
   return (
     <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
       <SafeAreaView style={styles.container}>
-        <Text style={styles.main}>My Bookings</Text>
+        <Text style={styles.main}>Bookings</Text>
         {bookings.map((booking) => (
           <BookingItem
             key={booking.id}
