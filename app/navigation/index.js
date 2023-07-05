@@ -3,4 +3,4 @@ import AuthStack from './AuthStack';
 import AdminAppStack from './AdminAppStack';
 import RootNavigator from './RootNavigator';
 
-export { AdminAppStack, AuthStack, RootNavigator };
+export { AdminAppStack, AuthStack, AppStack, RootNavigator };

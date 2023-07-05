@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, TextInput, View, Image, TouchableOpacity, 
-  Alert, KeyboardAvoidingView, Platform 
+  Alert, KeyboardAvoidingView, 
 } from 'react-native';
 import { setDoc, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import {
@@ -80,6 +80,8 @@ export default function RegisterPage({ navigation }) {
             name: name,
             // everyone added to default groups
             groups: await getDefaultGroups(),
+            // default role is user for everyone 
+            role: "user"
           });
           return user;
         })

@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 export default function ProfilePage() {
   const [name, setName] = useState("");
   const [groups, setGroups] = useState(""); 
+  const [role, setRole] = useState("");
   const userRef = doc(db, "users", auth.currentUser.uid);
 
   const handleLogOut = () => {
@@ -28,6 +29,7 @@ export default function ProfilePage() {
         groupNames.push(group.groupName);
       }));
       setGroups(groupNames.join(", "));
+      setRole(await user.get("role"));
     })
     return unsubscribe;
   }, []);
@@ -69,7 +71,7 @@ export default function ProfilePage() {
       </Text>
 
       <TextBox
-        data="User"
+        data={role}
       />
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogOut}>

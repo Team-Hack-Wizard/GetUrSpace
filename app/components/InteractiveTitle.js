@@ -4,12 +4,15 @@ import { AntDesign } from '@expo/vector-icons';
 
 export default function InteractiveTitle({ navigation, data }) {
     const handlePress = () => {
-      navigation.navigate('Manage Groupings');
+      navigation.navigate('Manage Groupings', {
+        groupId: data.groupId,
+        groupName: data.groupName,
+      });
     };
 
   return (
     <View style={styles.box}>
-      <Text style={styles.text}>{data}</Text>
+      <Text style={styles.text}>{data.groupName}</Text>
       <TouchableOpacity onPress={handlePress} style={styles.iconContainer}>
         <AntDesign name="infocirlceo" size={24} color="white" />
       </TouchableOpacity>
