@@ -1,69 +1,126 @@
-import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, Alert, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { MaterialIcons, Ionicons } from '@expo/vector-icons'
 import CalendarDropDown from '../components/CalendarDropDown'
 import NumberDropDown from '../components/NumberDropDown'
 import TimeDropDown from '../components/TimeDropDown'
+import { Msg } from '../functions'
+import { db, auth } from '../config/firebase'
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore'
+import moment from 'moment'
 
-export default function AdminBookings({ navigation }) {
-    const handleReturn = () => {
-      navigation.goBack();
-    };
+export default function AdminBookings({ navigation, route }) {
+  const { facilityId, facilityName, groupId, groupName, number } = route.params;
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  const [fromTime, setFromTime] = useState(null);
+  const [toTime, setToTime] = useState(null);
+  const [selectedNumber, setSelectedNumber] = useState(null);
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(23);
 
-    const handleSettings = () => {
-      navigation.navigate('Manage Facilities');
-    };
+  useEffect(() => {
+    async function getTime() {
+      const facilityDoc = await getDoc(doc(db, 'facilities', facilityId));
+      setStartTime(facilityDoc.data().startTime);
+      setEndTime(facilityDoc.data().endTime);
+    }
+    getTime();
+  }, []);
 
-    const [fromDate, setFromDate] = useState(null);
-    const [toDate, setToDate] = useState(null);
-    const [fromTime, setFromTime] = useState(null);
-    const [toTime, setToTime] = useState(null);
-    const [selectedNumber, setSelectedNumber] = useState(null);
+  const handleReturn = () => {
+    navigation.goBack();
+  };
 
-    const handleFromDateSelect = (selectedDate) => {
-      setFromDate(selectedDate);
-    };
-  
-    const handleToDateSelect = (selectedDate) => {
-      if (fromDate && selectedDate >= fromDate) {
-        setToDate(selectedDate);
-      } else {
-        // Show an error message or handle the invalid selection here
-        Alert.alert(
-          'Invalid Date',
-          `Please choose a date later than ${fromDate}.`,
-          [
-            { text: 'OK', onPress: () => console.log('OK Pressed') }
-          ],
-          { cancelable: false }
-        );
+  const handleSettings = () => {
+    navigation.navigate('Manage Facilities', route.params);
+  };
+
+  // child componenet will handle the UI of selection page
+  // Then pass back the selected data to the parent component
+  const handleFromDateSelect = (selectedDate) => {
+    setFromDate(selectedDate);
+  };
+
+  const handleToDateSelect = (selectedDate) => {
+    if (fromDate && selectedDate >= fromDate) {
+      setToDate(selectedDate);
+    } else {
+      // Show an error message or handle the invalid selection here
+      Msg('Invalid Date', `Please choose a date later than ${fromDate}.`)
+    }
+  };
+
+  const handleFromTimeSelect = (selectedTime) => {
+    setFromTime(selectedTime.toString());
+  };
+
+  const handleToTimeSelect = (selectedTime) => {
+    if (fromDate === toDate && selectedTime < fromTime) {
+      // Show an error message or handle the invalid selection here
+      setToTime(null);
+      Msg('Invalid Time', `Please choose a time later than ${fromTime}.`)
+    } else {
+      setToTime(selectedTime.toString())
+    }
+  };
+
+  const handleNumberSelect = (selectedNumber) => {
+    setSelectedNumber(selectedNumber.toString());
+  };
+
+  const handleBook = async () => {
+    if (fromDate === null || toDate === null || fromTime === null || toTime === null || selectedNumber === null) {
+      Msg('Invalid Input', 'Please fill in all the fields.')
+    } else {
+      const start = moment(`${fromDate}T${fromTime}`);
+      const end = moment(`${toDate}T${toTime}`);
+      const facilityRef = doc(db, 'facilities', facilityId);
+      const facilityDoc = await getDoc(facilityRef);
+      const dailyStart = facilityDoc.data().startTime;
+      const dailyEnd = facilityDoc.data().endTime;
+      
+      const newFacBooking = facilityDoc.data().bookings;
+      // loop through from start to end
+      while (start.isBefore(end)) {
+        // add the booking in bookings document as well as the facility's bookings array
+        const bookingRef = addDoc(collection(db, 'bookings'), {
+          date: start.format('YYYY-MM-DD'),
+          time: start.hours(),
+          facilityId: facilityId,
+          facilityName: facilityName,
+          groupId: groupId,
+          groupName: groupName,
+          facilityNumber: selectedNumber,
+          userId: auth.currentUser.uid,
+        });
+
+        if (!newFacBooking[start.format('YYYY-MM-DD')]) {
+          newFacBooking[start.format('YYYY-MM-DD')] = {};
+        }
+        if (!newFacBooking[start.format('YYYY-MM-DD')][start.hours()]) {
+          newFacBooking[start.format('YYYY-MM-DD')][start.hours()] = [];
+        }
+        newFacBooking[start.format('YYYY-MM-DD')][start.hours()].push(selectedNumber);
+
+        // increment start by 1 hour each time
+        // if it go past the normal operating hours, increment to next day startTime
+
+        if (start.hour() == dailyEnd) {
+          start.add(1, 'day');
+          start.hours(dailyStart);
+        } else {
+          start.add(1, 'hour');
+        }
       }
-    };
-
-    const handleFromTimeSelect = (selectedTime) => {
-      setFromTime(selectedTime.toString());
-    };
-
-    const handleToTimeSelect = (selectedTime) => {
-      if (fromDate === toDate && selectedTime < fromTime) {
-        // Show an error message or handle the invalid selection here
-        Alert.alert(
-          'Invalid Date',
-          `Please choose a time later than ${fromTime}.`,
-          [
-            { text: 'OK', onPress: () => console.log('OK Pressed') }
-          ],
-          { cancelable: false }
-        );
-      } else {
-        setToTime(selectedTime.toString())
-      }
-    };
-
-    const handleNumberSelect = (selectedNumber) => {
-      setSelectedNumber(selectedNumber.toString());
-    };
+      console.log(newFacBooking);
+      await updateDoc(facilityRef, {
+        bookings: newFacBooking,
+      });
+      Msg('Booking Successful', 'Your booking has been made successfully.');
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,7 +136,7 @@ export default function AdminBookings({ navigation }) {
 
       <View>
         <Text style={styles.text}>From Date:</Text>
-        <CalendarDropDown 
+        <CalendarDropDown
           selectedDate={fromDate}
           onSelectDate={handleFromDateSelect}
         />
@@ -87,30 +144,41 @@ export default function AdminBookings({ navigation }) {
 
       <View>
         <Text style={styles.text}>To Date:</Text>
-        <CalendarDropDown 
+        <CalendarDropDown
           selectedDate={toDate}
           onSelectDate={handleToDateSelect}
         />
       </View>
 
-      <View>
+      <View key={"fromTime" + startTime + endTime}>
         <Text style={styles.text}>From Time:</Text>
-        <TimeDropDown onSelectTime={handleFromTimeSelect}/>
+        <TimeDropDown
+          onSelectTime={handleFromTimeSelect}
+          startTime={startTime}
+          endTime={endTime}
+        />
       </View>
 
-      <View>
+      <View key={"toTime" + startTime + endTime}>
         <Text style={styles.text}>To Time:</Text>
-        <TimeDropDown onSelectTime={handleToTimeSelect}/>
+        <TimeDropDown
+          onSelectTime={handleToTimeSelect}
+          startTime={startTime}
+          endTime={endTime}
+        />
       </View>
 
       <View>
         <Text style={styles.text}>Facility Number</Text>
-        <NumberDropDown onSelectNumber={handleNumberSelect}/>
+        <NumberDropDown
+          onSelectNumber={handleNumberSelect}
+          maxNumber={number}
+        />
       </View>
 
       <TouchableOpacity
         style={styles.bookBtn}
-        onPress={handleReturn}>
+        onPress={handleBook}>
         <Text style={styles.bookText}>Book</Text>
       </TouchableOpacity>
     </SafeAreaView>

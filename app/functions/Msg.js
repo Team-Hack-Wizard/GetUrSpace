@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 
-export default function Msg(title, msg) {
+export default function Msg(title, msg, onOk, onCancel) {
   
   Alert.alert(
   title,
@@ -8,10 +8,10 @@ export default function Msg(title, msg) {
   [
     {
       text: "Cancel",
-      //onPress: () => console.log("Cancel Pressed"),
+      onPress: onCancel ? onCancel : () => {},
       style: "cancel"
     },
-    { text: "OK" }
+    { text: "OK", onPress: (onOk) ? onOk : () => {}}
   ],
   { cancelable: false }
   );

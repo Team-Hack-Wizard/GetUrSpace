@@ -4,27 +4,31 @@ import { Calendar } from 'react-native-calendars'
 import { Ionicons } from '@expo/vector-icons'
 
 export default function CalendarDropDown({ selectedDate, onSelectDate }) {
-    const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-    const toggleCalendar = () => {
-        setModalVisible(!modalVisible);
-    };
+  const toggleCalendar = () => {
+    setModalVisible(!modalVisible);
+  };
 
-    const handleDayPress = (day) => {
-        onSelectDate(day.dateString);
-        toggleCalendar();
-    };
+  // pass the booking date back to the parent component
+  const handleDayPress = (day) => {
+    onSelectDate(day.dateString);
+    toggleCalendar();
+  };
 
-    // this ensures that the date always follows the singapore timezone date
-    const moment = require('moment-timezone');
-    const sgDate = moment().tz("Asia/Singapore").toDate();
-    const minDate = sgDate.toISOString().split('T')[0];
+  // this ensures that the date always follows the singapore timezone date
+  const moment = require('moment-timezone');
+  const sgDate = moment().tz("Asia/Singapore").toDate();
+  const minDate = sgDate.toISOString().split('T')[0];
 
+  // may want to set the min date for admin booking to be 
+  // 1 day after the earliest date that users can book
+  // to prevent admin from mass booking the slots have may have contain users' bookings
   return (
     <>
       <TouchableOpacity style={styles.dropdown} onPress={toggleCalendar}>
         <Text style={styles.dropdownText}>
-            {selectedDate ? selectedDate : 'Select Date'}
+          {selectedDate ? selectedDate : 'Select Date'}
         </Text>
       </TouchableOpacity>
 
@@ -58,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
     paddingHorizontal: 16,
   },
-    
+
   dropdownText: {
     fontSize: 18,
   },

@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView } from 'react-native';
 
-export default function TimeDropDown({ onSelectTime }) {
+export default function TimeDropDown({ onSelectTime, startTime, endTime }) {
     const [selectedTime, setSelectedTime] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const options = [
-        '08:00', '09:00', '10:00', '11:00',
-        '12:00', '13:00', '14:00', '15:00',
-        '16:00', '17:00', '18:00', '19:00',
-        '20:00', '21:00', '22:00', '23:00'
-    ];
+
+    const range = (start, stop, step) =>
+      Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+
+    const options = range(startTime, endTime, 1).map((i) => i < 10 ? `0${i}:00`: (i + ':00'))
 
     const handleOptionPress = (option) => {
         setModalVisible(false);

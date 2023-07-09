@@ -3,15 +3,15 @@ import React, { useState, useEffect } from 'react'
 import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons'
 
 export default function AdminFacItem({ navigation, facilityId, facilityName, 
-    groupId, groupName, booking }) {
+    groupId, groupName, number }) {
 
   const handlePress = () => {
     navigation.navigate('Admin Bookings', {
-      ...booking,
       facilityId: facilityId,
       facilityName: facilityName,
       groupId: groupId,
       groupName: groupName,
+      number: number,
     });
   }
 

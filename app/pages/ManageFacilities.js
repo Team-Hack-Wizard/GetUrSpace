@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import NumberDropDown from '../components/NumberDropDown'
 import TimeDropDown from '../components/TimeDropDown'
 
-export default function ManageFacilities({ navigation }) {
+export default function ManageFacilities({ navigation, route }) {
     const handleReturn = () => {
       navigation.goBack();
     };
