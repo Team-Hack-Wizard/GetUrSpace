@@ -22,11 +22,16 @@ export default function BookingsPage() {
       const facilityRef = doc(db, "facilities", facilityId);
       // bookings: {date1: {time1: [bookingId1, bookingId2], time2: [...],...},
       //      date2: {time1: [bookingId3, bookingId4], ...}...}
-      const facilityBookings = { ...((await getDoc(facilityRef)).data().bookings) };
-      facilityBookings[date][time] = (facilityBookings[date][time]).filter((num) => num != facilityNumber);
-      updateDoc(facilityRef, {
-        "bookings": facilityBookings
-      });
+      const facilityDoc = await getDoc(facilityRef);
+      if (facilityDoc.exists()) { 
+        const facilityBookings = { ...(facilityDoc.data().bookings) };
+        facilityBookings[date][time] = (facilityBookings[date][time]).filter((num) => num != facilityNumber);
+        updateDoc(facilityRef, {
+          "bookings": facilityBookings
+        });
+      } else {
+        console.log("No such facility! Possibilly deleted by admin.");
+      }
       await deleteDoc(bookingRef);
     } catch (e) {
       console.log(e);
@@ -86,7 +91,7 @@ export default function BookingsPage() {
   return (
     <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
       <SafeAreaView style={styles.container}>
-        <Text style={styles.main}>My Bookings</Text>
+        <Text style={styles.main}>Bookings</Text>
         {bookings.map((booking) => (
           <BookingItem
             key={booking.id}
