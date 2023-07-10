@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView } from 'react-native';
 
-export default function TimeDropDown({ onSelectTime, startTime, endTime }) {
-    const [selectedTime, setSelectedTime] = useState(null);
-    const [modalVisible, setModalVisible] = useState(false);
+export default function TimeDropDown({ onSelectTime, startTime, endTime, value }) {
+  // const [selectedTime, setSelectedTime] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-    const range = (start, stop, step) =>
-      Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+  const range = (start, stop, step) =>
+    Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
 
-    const options = range(startTime, endTime, 1).map((i) => i < 10 ? `0${i}:00`: (i + ':00'))
+  const options = range(startTime, endTime, 1).map((i) => i < 10 ? `0${i}:00` : (i + ':00'))
 
-    const handleOptionPress = (option) => {
-        setModalVisible(false);
-        onSelectTime(option);
-        setSelectedTime(option.toString());
-    };
+  const handleOptionPress = (option) => {
+    setModalVisible(false);
+    onSelectTime(option);
+    //setSelectedTime(option.toString());
+  };
 
   return (
     <>
       <TouchableOpacity style={styles.dropdown} onPress={() => setModalVisible(true)}>
         <Text style={styles.dropdownText}>
-            {selectedTime ? selectedTime : 'Select Timing'}
+          {value ? value.toString() : 'Select Timing'}
         </Text>
       </TouchableOpacity>
 

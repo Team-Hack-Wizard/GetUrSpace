@@ -57,7 +57,7 @@ export default function AdminBookings({ navigation, route }) {
   };
 
   const handleToTimeSelect = (selectedTime) => {
-    if (fromDate === toDate && selectedTime < fromTime) {
+    if (fromDate === toDate && selectedTime <= fromTime) {
       // Show an error message or handle the invalid selection here
       setToTime(null);
       Msg('Invalid Time', `Please choose a time later than ${fromTime}.`)
@@ -114,7 +114,6 @@ export default function AdminBookings({ navigation, route }) {
           start.add(1, 'hour');
         }
       }
-      console.log(newFacBooking);
       await updateDoc(facilityRef, {
         bookings: newFacBooking,
       });
@@ -156,6 +155,7 @@ export default function AdminBookings({ navigation, route }) {
           onSelectTime={handleFromTimeSelect}
           startTime={startTime}
           endTime={endTime}
+          value={fromTime}
         />
       </View>
 
@@ -165,6 +165,7 @@ export default function AdminBookings({ navigation, route }) {
           onSelectTime={handleToTimeSelect}
           startTime={startTime}
           endTime={endTime}
+          value = {toTime}
         />
       </View>
 

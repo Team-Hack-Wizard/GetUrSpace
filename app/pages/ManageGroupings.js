@@ -211,6 +211,10 @@ export default function ManageGroupings({ navigation, route }) {
       bookings: {},
       startTime: 8,
       endTime: 23,
+      maxHoursPerWeek: 2,
+      maxPerHour: 1,
+      inAdvanceDays: 7,
+      location: "",
     }
     // add new facility to facilities collection
     const newFacilityRef = await addDoc(collection(db, "facilities"), InitialFacility);
