@@ -1,29 +1,48 @@
-import { StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { MaterialIcons } from '@expo/vector-icons'
-import NumberDropDown from '../components/NumberDropDown'
-import TimeDropDown from '../components/TimeDropDown'
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
+import TimeDropDown from "../components/TimeDropDown";
 
 export default function ManageFacilities({ navigation }) {
-    const handleReturn = () => {
-      navigation.goBack();
-    };
+  const handleReturn = () => {
+    navigation.goBack();
+  };
 
-    const handleSave = () => {
-      navigation.navigate('Facilities');
-    };
+  const handleSave = () => {
+    navigation.navigate("Facilities");
+  };
 
-    const [selectedTime, setSelectedTime] = useState(null);
-    const [selectedNumber, setSelectedNumber] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [hours, setHours] = useState('');
+  const [days, setDays] = useState('');
+  const [facilities, setFacilities] = useState('');
 
-    const handleTimeSelect = (selectedTime) => {
-      setSelectedTime(selectedTime.toString());
-    };
-  
-    const handleNumberSelect = (selectedNumber) => {
-      setSelectedNumber(selectedNumber.toString());
-    };
+  const handleTimeSelect = (selectedTime) => {
+    setSelectedTime(selectedTime.toString());
+  };
+
+  const handleHours = (text) => {
+    const numericValue = text.replace(/[^0-9]/g, '');
+    setHours(numericValue);
+  };
+
+  const handleDays = (text) => {
+    const numericValue = text.replace(/[^0-9]/g, '');
+    setDays(numericValue);
+  };
+
+  const handleFacilities = (text) => {
+    const numericValue = text.replace(/[^0-9]/g, '');
+    setFacilities(numericValue);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -31,55 +50,75 @@ export default function ManageFacilities({ navigation }) {
         <TouchableOpacity onPress={handleReturn}>
           <MaterialIcons name="arrow-back-ios" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.facInfo}>Facility Info</Text>
+        <Text style={styles.facInfo}>Facility Settings</Text>
       </View>
 
-      <View>
-        <Text style={styles.text}>Maximum hours per week</Text>
-        <NumberDropDown onSelectNumber={handleNumberSelect}/>
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View>
+          <Text style={styles.text}>Maximum hours per week</Text>
+          <TextInput
+            style={styles.input}
+            value={hours}
+            onChangeText={handleHours}
+            keyboardType="numeric"
+            selectionColor="#094074"
+          />
+        </View>
 
-      <View>
-        <Text style={styles.text}>Book in advance(days)</Text>
-        <NumberDropDown onSelectNumber={handleNumberSelect}/>
-      </View>
+        <View>
+          <Text style={styles.text}>Book in advance(days)</Text>
+          <TextInput
+            style={styles.input}
+            value={days}
+            onChangeText={handleDays}
+            keyboardType="numeric"
+            selectionColor="#094074"
+          />
+        </View>
 
-      <View>
-        <Text style={styles.text}>Rename Facility</Text>
-        <TextInput
-          style={styles.input}
-          selectionColor="#094074"
-        />
-      </View>
+        <View>
+          <Text style={styles.text}>Rename Facility</Text>
+          <TextInput style={styles.input} selectionColor="#094074" />
+        </View>
 
-      <View>
-        <Text style={styles.text}>Number of facilities</Text>
-        <NumberDropDown onSelectNumber={handleNumberSelect}/>
-      </View>
+        <View>
+          <Text style={styles.text}>Number of facilities</Text>
+          <TextInput
+            style={styles.input}
+            value={facilities}
+            onChangeText={handleFacilities}
+            keyboardType="numeric"
+            selectionColor="#094074"
+          />
+        </View>
 
-      <View>
-        <Text style={styles.text}>First Booking Slot Timing</Text>
-        <TimeDropDown onSelectTime={handleTimeSelect}/>
-      </View>
+        <View>
+          <Text style={styles.text}>First Booking Slot Timing</Text>
+          <TimeDropDown onSelectTime={handleTimeSelect} />
+        </View>
 
-      <View>
-        <Text style={styles.text}>Last Booking Slot Timing</Text>
-        <TimeDropDown onSelectTime={handleTimeSelect}/>
-      </View>
+        <View>
+          <Text style={styles.text}>Last Booking Slot Timing</Text>
+          <TimeDropDown onSelectTime={handleTimeSelect} />
+        </View>
 
-      <TouchableOpacity
-        style={styles.saveBtn}
-        onPress={handleSave}>
+        <View>
+          <Text style={styles.text}>Location to be displayed</Text>
+          <TextInput style={styles.input} selectionColor="#094074" />
+        </View>
+      </ScrollView>
+
+      <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
         <Text style={styles.saveText}>Save</Text>
       </TouchableOpacity>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
 
   main: {
@@ -87,12 +126,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 
   facInfo: {
     fontSize: 30,
-    marginHorizontal: 70,
+    marginHorizontal: 50,
   },
 
   text: {
@@ -103,11 +142,11 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    width: '90%',
+    width: "90%",
     borderRadius: 10,
     height: 40,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
     marginBottom: 20,
     backgroundColor: "#E5E5E5",
     paddingHorizontal: 16,
@@ -119,13 +158,14 @@ const styles = StyleSheet.create({
     height: 50,
     alignSelf: "center",
     justifyContent: "center",
-    marginTop: 20,
-    backgroundColor: '#094074',
+    marginTop: 50,
+    marginBottom: 60,
+    backgroundColor: "#094074",
   },
 
   saveText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
     textAlign: "center",
   },
-})
+});

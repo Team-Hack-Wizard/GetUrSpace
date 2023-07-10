@@ -1,8 +1,8 @@
 import {
   StyleSheet,
   Text,
-  View,
   ScrollView,
+  View,
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -20,44 +20,14 @@ import {
   getDocs,
   Timestamp,
 } from "firebase/firestore";
-import BookingItem from "../components/BookingItem";
+import PrevBookingItem from "../components/PrevBookingItem";
 import { auth, db } from "../config/firebase";
-import { AntDesign } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
-export default function BookingsPage({ navigation }) {
+export default function PrevBookings({ navigation }) {
   // bookings in this format:
   // [{ id: '1', facility: 'MPH', venue: 'PGPR', date: '8 July', time: '11.30'}, ... ]
-  const [bookings, setBookings] = useState([]);
-
-  const handleCancelBooking = async (
-    bookingId,
-    facilityId,
-    facilityNumber,
-    date,
-    time
-  ) => {
-    try {
-      // the onSnapshot listener below will update the bookings state after database is updated
-      // so we don't need to update the bookings state here
-      // delete booking from database (in both facility and bookings collections)
-      const bookingRef = doc(db, "bookings", bookingId);
-      const facilityRef = doc(db, "facilities", facilityId);
-      // bookings: {date1: {time1: [bookingId1, bookingId2], time2: [...],...},
-      //      date2: {time1: [bookingId3, bookingId4], ...}...}
-      const facilityBookings = {
-        ...(await getDoc(facilityRef)).data().bookings,
-      };
-      facilityBookings[date][time] = facilityBookings[date][time].filter(
-        (num) => num != facilityNumber
-      );
-      updateDoc(facilityRef, {
-        bookings: facilityBookings,
-      });
-      await deleteDoc(bookingRef);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const [prevBookings, setPrevBookings] = useState([]);
 
   // convert time in number to string of HH:00
   const parseTime = (time) => {
@@ -105,28 +75,26 @@ export default function BookingsPage({ navigation }) {
           });
         }
       });
-      setBookings(bookings);
+      setPrevBookings(bookings);
     });
     return unsubscribe;
   }, []);
 
-  const handlePress = () => {
-    navigation.navigate("Previous Bookings");
+  const handleReturn = () => {
+    navigation.goBack();
   };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
       <SafeAreaView style={styles.container}>
         <View style={styles.box}>
-          <View style={styles.header}>
-            <Text style={styles.main}>Bookings</Text>
-          </View>
-          <TouchableOpacity onPress={handlePress}>
-            <AntDesign name="calendar" size={30} color="black" />
+          <TouchableOpacity onPress={handleReturn}>
+            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
           </TouchableOpacity>
+          <Text style={styles.main}>Past Bookings</Text>
         </View>
-        {bookings.map((booking) => (
-          <BookingItem
+        {prevBookings.map((booking) => (
+          <PrevBookingItem
             key={booking.id}
             id={booking.id}
             facility={booking.facility}
@@ -135,7 +103,6 @@ export default function BookingsPage({ navigation }) {
             venue={booking.venue}
             date={booking.date}
             time={booking.time}
-            onCancel={handleCancelBooking}
           />
         ))}
       </SafeAreaView>
@@ -150,22 +117,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  main: {
-    fontSize: 30,
+  box: {
     marginTop: 20,
     marginBottom: 20,
-    textAlign: "center",
-  },
-
-  header: {
-    marginLeft: 120,
-  },
-
-  box: {
-    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    alignSelf: "center",
-    width: "90%",
+    flexDirection: "row",
+  },
+
+  main: {
+    fontSize: 30,
+    marginHorizontal: 60,
   },
 });

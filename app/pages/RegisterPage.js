@@ -1,14 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
 import {
-  StyleSheet, Text, TextInput, View, Image, TouchableOpacity, 
-  Alert, KeyboardAvoidingView 
-} from 'react-native';
-import { setDoc, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Image,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+} from "react-native";
+import { setDoc, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import {
-  createUserWithEmailAndPassword, deleteUser, sendEmailVerification, updateProfile
-} from 'firebase/auth';
-import { auth, db } from '../config';
+  createUserWithEmailAndPassword,
+  deleteUser,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
+import { auth, db } from "../config";
 
 const DEFAULT_GROUP_IDS = ["S3Y8U7GJXnRmTyVeDBAX"];
 // get group info on the default groups, to pass in to the groups under newly createduser document
@@ -17,20 +26,20 @@ async function getDefaultGroups() {
   for (const groupId of DEFAULT_GROUP_IDS) {
     let curGroup = {};
     const groupSnap = await getDoc(doc(db, "groups", groupId));
-    if (! groupSnap.exists()) {
+    if (!groupSnap.exists()) {
       console.log("No such document!");
       continue;
-    } 
+    }
     curGroup.groupId = groupId;
     curGroup.groupName = await groupSnap.get("name");
     const facilityIds = await groupSnap.get("facilities");
     let facilities = [];
     for (const facilityId of facilityIds) {
       const facilitySnap = await getDoc(doc(db, "facilities", facilityId));
-      if (! facilitySnap.exists()) {
+      if (!facilitySnap.exists()) {
         console.log("No such document!");
         continue;
-      } 
+      }
       facilities.push({
         facilityId: facilityId,
         facilityName: await facilitySnap.get("name"),
@@ -43,27 +52,33 @@ async function getDefaultGroups() {
 }
 
 export default function RegisterPage({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const errMsg = (msg) => Alert.alert(
-    "Invalid Details",
-    msg,
-    [
-      {
-        text: "Cancel",
-        //onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      { text: "OK" }
-    ],
-    { cancelable: false }
-  );
+  const errMsg = (msg) =>
+    Alert.alert(
+      "Invalid Details",
+      msg,
+      [
+        {
+          text: "Cancel",
+          //onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "OK" },
+      ],
+      { cancelable: false }
+    );
 
   const handleRegister = async () => {
-    if (email === "" || password === "" || confirmPassword === "" || name === "") {
+    if (
+      email === "" ||
+      password === "" ||
+      confirmPassword === "" ||
+      name === ""
+    ) {
       errMsg("Please ensure no fields are empty!");
     } else if (email.length < 10 || email.slice(-10) !== "@u.nus.edu") {
       errMsg("Please register with a valid NUS email!");
@@ -72,37 +87,39 @@ export default function RegisterPage({ navigation }) {
     } else {
       try {
         await createUserWithEmailAndPassword(auth, email, password)
-        .then(async (userCredentials) => {
-          const user = userCredentials.user;
-          const uid = user.uid;
-          await setDoc(doc(db, "users", uid), {
-            email: email,
-            name: name,
-            // everyone added to default groups
-            groups: await getDefaultGroups(),
+          .then(async (userCredentials) => {
+            const user = userCredentials.user;
+            const uid = user.uid;
+            await setDoc(doc(db, "users", uid), {
+              email: email,
+              name: name,
+              // everyone added to default groups
+              groups: await getDefaultGroups(),
+            });
+            return user;
+          })
+          .then(async (user) => {
+            await updateProfile(user, {
+              displayName: name,
+            });
+            console.log(user);
+            sendEmailVerification(user);
           });
-          return user;
-        })
-        .then(async (user) => {
-          await updateProfile(user, {
-            displayName: name
-          });
-          console.log(user);
-          sendEmailVerification(user)
-        })
 
         // update users in each default group
         for (const groupId of DEFAULT_GROUP_IDS) {
           const groupRef = doc(db, "groups", groupId);
           updateDoc(groupRef, {
-            users: arrayUnion(auth.currentUser.uid)
+            users: arrayUnion(auth.currentUser.uid),
           });
         }
 
-        alert("Verification email has been sent, please verify your email before logging in!");
-        navigation.navigate('Login');
+        alert(
+          "Verification email has been sent, please verify your email before logging in!"
+        );
+        navigation.navigate("Login");
         if (auth.currentUser && !auth.currentUser.emailVerified) {
-          console.log("User is signed in, signing out...")
+          console.log("User is signed in, signing out...");
           auth.signOut();
         }
       } catch (error) {
@@ -110,24 +127,21 @@ export default function RegisterPage({ navigation }) {
         console.log(error.code);
         console.log(error.message);
         deleteUser(auth.currentUser).catch((error) => {
-          console.log("Error deleting user")
+          console.log("Error deleting user");
           console.log(error.code);
           console.log(error.message);
         });
-      };
-
+      }
     }
-  }
-
-  const handleLogin = () => {
-    navigation.navigate('Login');
   };
 
-
+  const handleLogin = () => {
+    navigation.navigate("Login");
+  };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior='padding'>
-      <Image style={styles.image} source={require('../assets/icon.png')} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <Image style={styles.image} source={require("../assets/icon.png")} />
 
       <Text style={styles.main}>
         <Text>Register</Text>
@@ -136,42 +150,42 @@ export default function RegisterPage({ navigation }) {
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
           value={email}
-          placeholder='Enter your UserID@u.nus.edu'
-          selectionColor='red'
+          placeholder="Enter your UserID@u.nus.edu"
+          selectionColor="red"
         />
       </View>
 
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setName(text)}
+          onChangeText={(text) => setName(text)}
           value={name}
-          placeholder='Enter your name'
-          selectionColor='red'
+          placeholder="Enter your name"
+          selectionColor="red"
         />
       </View>
 
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setPassword(text)}
+          onChangeText={(text) => setPassword(text)}
           value={password}
-          placeholder='Enter your password'
+          placeholder="Enter your password"
           secureTextEntry={true}
-          selectionColor='red'
+          selectionColor="red"
         />
       </View>
 
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setConfirmPassword(text)}
+          onChangeText={(text) => setConfirmPassword(text)}
           value={confirmPassword}
-          placeholder='Confirm your password'
+          placeholder="Confirm your password"
           secureTextEntry={true}
-          selectionColor='red'
+          selectionColor="red"
         />
       </View>
 
@@ -194,14 +208,14 @@ export default function RegisterPage({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
   },
 
   image: {
     marginTop: 60,
     marginBottom: 10,
-    width: '100%',
+    width: "100%",
     height: "35%",
   },
 
@@ -233,11 +247,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 10,
-    backgroundColor: '#094074',
+    backgroundColor: "#094074",
   },
 
   registerText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
   },
 

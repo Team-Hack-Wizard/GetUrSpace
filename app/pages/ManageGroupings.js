@@ -1,7 +1,13 @@
-import { StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function ManageGroupings({ navigation }) {
   const handleReturn = () => {
@@ -29,8 +35,18 @@ export default function ManageGroupings({ navigation }) {
         <TextInput style={styles.input} selectionColor="#094074" />
       </View>
 
-      <View style={styles.box}>
+      <View>
         <Text style={styles.text}>Rename Group</Text>
+        <TextInput style={styles.input} selectionColor="#094074" />
+      </View>
+
+      <View>
+        <Text style={styles.text}>Add Facility (Enter name)</Text>
+        <TextInput style={styles.input} selectionColor="#094074" />
+      </View>
+
+      <View>
+        <Text style={styles.text}>Remove Facility (Enter name)</Text>
         <TextInput style={styles.input} selectionColor="#094074" />
       </View>
 
@@ -44,51 +60,55 @@ export default function ManageGroupings({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
+
   main: {
     marginTop: 20,
     marginBottom: 20,
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
   },
+
   icon: {
     marginLeft: 30,
   },
+
   manageGrp: {
     fontSize: 30,
     marginHorizontal: 50,
   },
-  box: {
-    marginVertical: 20,
-  },
+
   text: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
     marginLeft: 20,
-    textAlign: 'left',
+    textAlign: "left",
   },
+
   input: {
-    backgroundColor: '#E5E5E5',
+    backgroundColor: "#E5E5E5",
     padding: 8,
     borderRadius: 5,
     marginBottom: 20,
-    width: '90%',
-    alignSelf: 'center',
+    width: "90%",
+    alignSelf: "center",
   },
+
   submitBtn: {
-    width: '90%',
+    width: "90%",
     borderRadius: 10,
     height: 50,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    marginTop: 200,
-    backgroundColor: '#094074',
+    alignSelf: "center",
+    justifyContent: "center",
+    marginTop: 35,
+    backgroundColor: "#094074",
   },
+
   submitText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

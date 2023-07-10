@@ -1,20 +1,18 @@
 import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { FacilitiesPage, FacilityInfo, DatePage, TimePage } from "../pages";
+import { BookingsPage, PrevBookings } from "../pages";
 
 export default function FacilitiesStack() {
   const Stack = createNativeStackNavigator();
 
   return (
     <Stack.Navigator
-      initialRouteName="Facilities"
+      initialRouteName="Bookings"
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="Facilities" component={FacilitiesPage} />
-      <Stack.Screen name="Facility Info" component={FacilityInfo} />
-      <Stack.Screen name="Date" component={DatePage} />
-      <Stack.Screen name="Time" component={TimePage} />
+      <Stack.Screen name="Bookings" component={BookingsPage} />
+      <Stack.Screen name="Previous Bookings" component={PrevBookings} />
     </Stack.Navigator>
   );
 }

@@ -1,46 +1,56 @@
-import { StatusBar } from 'expo-status-bar';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
-import { auth } from '../config/firebase';
+import { StatusBar } from "expo-status-bar";
+import { sendPasswordResetEmail } from "firebase/auth";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Image,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+} from "react-native";
+import { auth } from "../config/firebase";
 
 export default function ForgotPWPage() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
-  const errMsg = (title, msg) => Alert.alert(
-    title,
-    msg,
-    [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      { text: "OK", onPress: () => console.log("OK Pressed") }
-    ],
-    { cancelable: false }
-  );
+  const errMsg = (title, msg) =>
+    Alert.alert(
+      title,
+      msg,
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ],
+      { cancelable: false }
+    );
 
   const handleForgotPassword = () => {
     if (email === "") {
-      errMsg("Error!", "Please ensure no fields are empty!"); 
+      errMsg("Error!", "Please ensure no fields are empty!");
       return;
     }
-    
+
     sendPasswordResetEmail(auth, email)
-    .then(() => { 
-      errMsg("", "A password reset link has been sent to your email!");
-    })
-    .catch((error) => {
-      errMsg("Error!", error.code + "\n" + error.message);
-      console.log(error.message);
-      return;
-    });
+      .then(() => {
+        errMsg("", "A password reset link has been sent to your email!");
+      })
+      .catch((error) => {
+        errMsg("Error!", error.code + "\n" + error.message);
+        console.log(error.message);
+        return;
+      });
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior='padding'>
-      <Image style={styles.image} source={require('../assets/icon.png')} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <Image style={styles.image} source={require("../assets/icon.png")} />
 
       <Text style={styles.main}>
         <Text>Forgot Password?</Text>
@@ -53,14 +63,17 @@ export default function ForgotPWPage() {
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
           value={email}
-          placeholder='Enter your UserID@u.nus.edu'
-          selectionColor='red'
+          placeholder="Enter your UserID@u.nus.edu"
+          selectionColor="red"
         />
       </View>
 
-      <TouchableOpacity style={styles.linkButton} onPress={handleForgotPassword}>
+      <TouchableOpacity
+        style={styles.linkButton}
+        onPress={handleForgotPassword}
+      >
         <Text style={styles.linkText}>Send Link</Text>
       </TouchableOpacity>
 
@@ -72,14 +85,14 @@ export default function ForgotPWPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
   },
 
   image: {
     marginTop: 60,
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
     height: "35%",
   },
 
@@ -116,11 +129,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 15,
-    backgroundColor: '#094074',
+    backgroundColor: "#094074",
   },
 
   linkText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
   },
 });

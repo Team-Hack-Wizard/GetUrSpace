@@ -1,101 +1,110 @@
-import { StatusBar } from 'expo-status-bar';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { auth } from '../config/firebase';
+import { StatusBar } from "expo-status-bar";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Image,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { auth } from "../config/firebase";
 
 export default function LoginPage({ navigation }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const errMsg = (msg) => Alert.alert(
+  const errMsg = (msg) =>
+    Alert.alert(
       "Unverified Account",
-      msg, 
+      msg,
       [
         {
           text: "Cancel",
           //onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
+          style: "cancel",
         },
-        { text: "OK"}
+        { text: "OK" },
       ],
       { cancelable: false }
     );
 
-    const handleLogin = () => {
-      if (email === "" || password === "") {
-        errMsg("Please ensure no fields are empty!");
-      } else {
-        signInWithEmailAndPassword(auth, email, password)
-        .then( userCredential => {
-          if (! userCredential.user.emailVerified) {
+  const handleLogin = () => {
+    if (email === "" || password === "") {
+      errMsg("Please ensure no fields are empty!");
+    } else {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          if (!userCredential.user.emailVerified) {
             errMsg("Please verify your email before logging in!");
             auth.signOut();
           }
         })
-        .catch((error) => { 
+        .catch((error) => {
           errMsg(error.message);
         });
+    }
+  };
 
-      }
-    };
+  const login = () => {
+    const strongRegex = new RegExp("^[a-zA-Z0-9_.+-]+@u.nus.edu");
 
-    const login = () => {
-      const strongRegex = new RegExp("^[a-zA-Z0-9_.+-]+@u.nus.edu");
+    if (!strongRegex.test(email)) {
+      showMessage(MESSAGE.email);
+      return false;
+    }
 
-      if (!strongRegex.test(email)) {
-          showMessage(MESSAGE.email)
-          return false;
-      }
+    if (!email || !password) {
+      showMessage({
+        message: "Invalid email or password entered. Try again.",
+      });
+      return false;
+    }
 
-      if ((!email) || (!password)) {
-          showMessage({
-            message: "Invalid email or password entered. Try again.",
-          })
-          return false;
-      }
-      
-      if (password.length < 8) {
-          showMessage(MESSAGE.password);
-          return false;
-      }
-    };
+    if (password.length < 8) {
+      showMessage(MESSAGE.password);
+      return false;
+    }
+  };
 
-    const handleRegister = () => {
-      navigation.navigate('Register');
-    };
+  const handleRegister = () => {
+    navigation.navigate("Register");
+  };
 
-    const handleForgotPassword = () => {
-      navigation.navigate('Forgot Password');
-    };
+  const handleForgotPassword = () => {
+    navigation.navigate("Forgot Password");
+  };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior='padding'>
-      <Image style={styles.image} source={require('../assets/icon.png')} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <Image style={styles.image} source={require("../assets/icon.png")} />
 
       <Text style={styles.main}>
         <Text>Log in</Text>
-      </Text>      
+      </Text>
 
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
           value={email}
-          placeholder='Enter your UserID@u.nus.edu'
-          selectionColor='red'
+          placeholder="Enter your UserID@u.nus.edu"
+          selectionColor="red"
         />
       </View>
 
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
-          onChangeText={text => setPassword(text)}
+          onChangeText={(text) => setPassword(text)}
           value={password}
-          placeholder='Enter your password'
+          placeholder="Enter your password"
           secureTextEntry={true}
-          selectionColor='red'
+          selectionColor="red"
         />
       </View>
 
@@ -122,14 +131,14 @@ export default function LoginPage({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
   },
 
   image: {
     marginTop: 60,
     marginBottom: 10,
-    width: '100%',
+    width: "100%",
     height: "35%",
   },
 
@@ -161,14 +170,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 15,
-    backgroundColor: '#094074',
+    backgroundColor: "#094074",
   },
 
   loginText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
   },
-  
+
   forgotButton: {
     height: 30,
     marginTop: 10,
