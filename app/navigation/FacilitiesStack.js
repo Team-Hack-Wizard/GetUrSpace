@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { FacilitiesPage, FacilityInfo, DatePage, TimePage } from "../pages";
+import { FacilitiesPage, FacilityInfo, DatePage, TimePage } from "../userpages";
 
 export default function FacilitiesStack() {
   const Stack = createNativeStackNavigator();

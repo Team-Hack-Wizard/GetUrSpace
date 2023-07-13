@@ -18,6 +18,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth, db } from "../config";
+import { Feather } from '@expo/vector-icons';
 
 const DEFAULT_GROUP_IDS = ["S3Y8U7GJXnRmTyVeDBAX"];
 // get group info on the default groups, to pass in to the groups under newly createduser document
@@ -56,6 +57,16 @@ export default function RegisterPage({ navigation }) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [securePassword, setSecurePassword] = useState(true);
+  const [secureConfirm, setSecureConfirm] = useState(true);
+
+  const toggleSecurePassword = () => {
+    setSecurePassword(!securePassword);
+  };
+
+  const toggleSecureConfirm = () => {
+    setSecureConfirm(!secureConfirm);
+  }
 
   const errMsg = (msg) =>
     Alert.alert(
@@ -95,6 +106,8 @@ export default function RegisterPage({ navigation }) {
               name: name,
               // everyone added to default groups
               groups: await getDefaultGroups(),
+              // default role is user for everyone
+              role: "user",
             });
             return user;
           })
@@ -169,24 +182,30 @@ export default function RegisterPage({ navigation }) {
 
       <View style={styles.inputView}>
         <TextInput
-          style={styles.inputText}
+          style={styles.passwordText}
           onChangeText={(text) => setPassword(text)}
           value={password}
           placeholder="Enter your password"
-          secureTextEntry={true}
+          secureTextEntry={securePassword}
           selectionColor="red"
         />
+        <TouchableOpacity style={styles.passwordIcon} onPress={toggleSecurePassword}>
+          <Feather name={securePassword ? "eye" : "eye-off"} size={24} color="grey" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.inputView}>
         <TextInput
-          style={styles.inputText}
+          style={styles.passwordText}
           onChangeText={(text) => setConfirmPassword(text)}
           value={confirmPassword}
           placeholder="Confirm your password"
-          secureTextEntry={true}
+          secureTextEntry={secureConfirm}
           selectionColor="red"
         />
+        <TouchableOpacity style={styles.passwordIcon} onPress={toggleSecureConfirm}>
+          <Feather name={secureConfirm ? "eye" : "eye-off"} size={24} color="grey" />
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
@@ -230,6 +249,7 @@ const styles = StyleSheet.create({
     height: 45,
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
     marginBottom: 10,
     backgroundColor: "#87cdee",
   },
@@ -238,6 +258,17 @@ const styles = StyleSheet.create({
     height: 50,
     flex: 1,
     textAlign: "center",
+  },
+
+  passwordText: {
+    height: 50,
+    flex: 1,
+    textAlign: "center",
+    paddingLeft: 40,
+  },
+
+  passwordIcon: {
+    padding: 10,
   },
 
   registerButton: {

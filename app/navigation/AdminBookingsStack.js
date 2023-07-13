@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { BookingsPage, PrevBookings } from "../userpages";
+import { AdminBookingsPage, AdminPrevBookings } from "../adminpages";
 
-export default function FacilitiesStack() {
+export default function AdminBookingsStack() {
   const Stack = createNativeStackNavigator();
 
   return (
@@ -11,8 +11,8 @@ export default function FacilitiesStack() {
       initialRouteName="Bookings"
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="Bookings" component={BookingsPage} />
-      <Stack.Screen name="Previous Bookings" component={PrevBookings} />
+      <Stack.Screen name="Bookings" component={AdminBookingsPage} />
+      <Stack.Screen name="Previous Bookings" component={AdminPrevBookings} />
     </Stack.Navigator>
   );
 }

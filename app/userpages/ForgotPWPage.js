@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { auth } from "../config/firebase";
 
-export default function ForgotPWPage() {
+export default function ForgotPWPage({ navigation }) {
   const [email, setEmail] = useState("");
 
   const errMsg = (title, msg) =>
@@ -26,7 +26,7 @@ export default function ForgotPWPage() {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
+        { text: "OK", onPress: () => { navigation.navigate("Login") } },
       ],
       { cancelable: false }
     );

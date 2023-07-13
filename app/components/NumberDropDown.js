@@ -8,10 +8,11 @@ import {
   ScrollView,
 } from "react-native";
 
-export default function NumberDropDown({ onSelectNumber }) {
+export default function NumberDropDown({ onSelectNumber, maxNumber }) {
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const options = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+  // options range from 1 to maxNumber
+  const options = Array.from(Array(maxNumber).keys()).map((i) => i + 1);
 
   const handleOptionPress = (option) => {
     setModalVisible(false);

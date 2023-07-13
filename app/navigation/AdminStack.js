@@ -3,10 +3,10 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   AdminFacilities,
-  AdminBookings,
-  ManageFacilities,
+  BookFacility,
+  FacilitySettings,
   ManageGroupings,
-} from "../pages";
+} from "../adminpages";
 
 export default function AdminStack() {
   const Stack = createNativeStackNavigator();
@@ -17,8 +17,8 @@ export default function AdminStack() {
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Facilities" component={AdminFacilities} />
-      <Stack.Screen name="Admin Bookings" component={AdminBookings} />
-      <Stack.Screen name="Manage Facilities" component={ManageFacilities} />
+      <Stack.Screen name="Book Facility" component={BookFacility} />
+      <Stack.Screen name="Facility Settings" component={FacilitySettings} />
       <Stack.Screen name="Manage Groupings" component={ManageGroupings} />
     </Stack.Navigator>
   );

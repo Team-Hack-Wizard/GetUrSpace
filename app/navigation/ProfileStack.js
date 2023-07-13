@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ProfilePage, FAQ } from "../pages";
+import { ProfilePage, FAQ } from "../userpages";
 
 export default function ProfileStack() {
   const Stack = createNativeStackNavigator();

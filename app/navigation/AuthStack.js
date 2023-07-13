@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { LoginPage, RegisterPage, ForgotPWPage } from "../pages";
+import { LoginPage, RegisterPage, ForgotPWPage } from "../userpages";
 
 const Stack = createNativeStackNavigator();
 

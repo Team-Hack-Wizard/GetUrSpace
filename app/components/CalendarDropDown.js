@@ -10,6 +10,7 @@ export default function CalendarDropDown({ selectedDate, onSelectDate }) {
     setModalVisible(!modalVisible);
   };
 
+  // pass the booking date back to the parent component
   const handleDayPress = (day) => {
     onSelectDate(day.dateString);
     toggleCalendar();
@@ -20,6 +21,9 @@ export default function CalendarDropDown({ selectedDate, onSelectDate }) {
   const sgDate = moment().tz("Asia/Singapore").toDate();
   const minDate = sgDate.toISOString().split("T")[0];
 
+  // may want to set the min date for admin booking to be
+  // 1 day after the earliest date that users can book
+  // to prevent admin from mass booking the slots have may have contain users' bookings
   return (
     <>
       <TouchableOpacity style={styles.dropdown} onPress={toggleCalendar}>

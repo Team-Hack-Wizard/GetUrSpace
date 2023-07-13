@@ -13,58 +13,46 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import InteractiveTitle from "../components/InteractiveTitle";
 import AdminFacItem from "../components/AdminFacItem";
 import { auth, db } from "../config/firebase";
-import {
-  doc,
-  onSnapshot,
-  getDoc,
-  getDocs,
-  collection,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, onSnapshot, getDoc } from "firebase/firestore";
 
 export default function AdminFacilities() {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  // tracks the groups the user is in
-  const [groups, setGroups] = useState([]);
-  // tracks the list of facilities in each group in the following format
   // [{id: group1Id, name: groupName,
   //  data: [{id: 1, name: "facility1"}, ...]}, ...]
   const [listData, setListData] = useState([]);
-  const booking = {
-    userId: auth.currentUser.uid,
-    facilityId: "",
-    facilityName: "",
-    groupId: "",
-    groupName: "",
-    date: "",
-    time: "",
-    facilityNumber: 0,
-  };
 
   const userRef = doc(db, "users", auth.currentUser.uid);
   // get snapshots of user's groups
   // listens to any changes to user's groups
   // gets all the groups and facilities info from the user document
   useEffect(() => {
-    const unsubscribe = onSnapshot(userRef, async (doc) => {
+    const unsubscribe = onSnapshot(userRef, async (userDoc) => {
       if (!loading) setLoading(true);
-      const groups = await doc.get("groups");
+      const groups = await userDoc.get("groups");
       // we want to pass in to listData: [{id: group1Id, name: groupName,
-      //  data: [{id: 1, name: "facility1"}, {id: 2, name: "facility2"}, ...]}, ...]
-      let curListData = groups.map((group) => {
-        return {
-          id: group.groupId,
-          name: group.groupName,
-          data: group.facilities.map((facility) => {
-            return {
-              id: facility.facilityId,
-              name: facility.facilityName,
-            };
-          }),
-        };
-      });
+      //  data: [{id: 1, name: "facility1", number: x}, {id: 2, name: "facility2", number: x}, ...]}, ...]
+      let curListData = await Promise.all(
+        groups.map(async (group) => {
+          return {
+            id: group.groupId,
+            name: group.groupName,
+            data: await Promise.all(
+              group.facilities.map(async (facility) => {
+                const facilityDoc = await getDoc(
+                  doc(db, "facilities", facility.facilityId)
+                );
+                return {
+                  id: facility.facilityId,
+                  name: facility.facilityName,
+                  number: facilityDoc.data().number,
+                };
+              })
+            ),
+          };
+        })
+      );
       setListData(curListData);
       if (loading) setLoading(false);
     });
@@ -134,7 +122,10 @@ export default function AdminFacilities() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <>
-            <InteractiveTitle navigation={navigation} data={item.name} />
+            <InteractiveTitle
+              navigation={navigation}
+              data={{ groupId: item.id, groupName: item.name }}
+            />
             {item.data.map((facility) => {
               if (
                 searchQuery === "" ||
@@ -148,7 +139,7 @@ export default function AdminFacilities() {
                     facilityName={facility.name}
                     groupId={item.id}
                     groupName={item.name}
-                    booking={{ ...booking }}
+                    number={facility.number}
                   />
                 );
               }

@@ -25,6 +25,7 @@ import {
 export default function ProfilePage({ navigation, route }) {
   const [name, setName] = useState("");
   const [groups, setGroups] = useState("");
+  const [role, setRole] = useState("");
   const userRef = doc(db, "users", auth.currentUser.uid);
   const [modalVisible, setModalVisible] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
@@ -109,6 +110,7 @@ export default function ProfilePage({ navigation, route }) {
         })
       );
       setGroups(groupNames.join(", "));
+      setRole(await user.get("role"));
     });
     return unsubscribe;
   }, []);
@@ -167,7 +169,7 @@ export default function ProfilePage({ navigation, route }) {
         <Text>Role</Text>
       </Text>
 
-      <TextBox data="User" />
+      <TextBox data={role} />
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogOut}>
         <Text style={styles.logoutText}>Log Out</Text>

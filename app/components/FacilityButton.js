@@ -6,23 +6,23 @@ import {
   FontAwesome5,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { BookingItem } from "./BookingItem";
 
-export default function AdminFacItem({
-  navigation,
+export default function FacilityButton({
   facilityId,
   facilityName,
   groupId,
   groupName,
   number,
+  bookings,
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const toggleDropdown = () => {
+    setExpanded(!expanded);
+  };
+
   const handlePress = () => {
-    navigation.navigate("Book Facility", {
-      facilityId: facilityId,
-      facilityName: facilityName,
-      groupId: groupId,
-      groupName: groupName,
-      number: number,
-    });
+
   };
 
   //dynamic rendering of icons depending on which facility is being booked
@@ -50,15 +50,26 @@ export default function AdminFacItem({
   };
 
   return (
-    <TouchableOpacity style={styles.facilityItem} onPress={handlePress}>
-      <View style={styles.iconContainer}>{renderIcon(facilityName)}</View>
-      <Text style={styles.facilityName}>{facilityName}</Text>
-    </TouchableOpacity>
+    <View>
+      <TouchableOpacity style={styles.facilityBtn} onPress={handlePress}>
+        <View style={styles.iconContainer}>{renderIcon(facilityName)}</View>
+        <Text style={styles.facilityName}>{facilityName}</Text>
+      </TouchableOpacity>
+      {expanded && (
+        <View style={styles.dropdown}>
+          {bookings
+            .filter((booking) => booking.facilityId === facilityId)
+            .map((booking) => (
+                <BookingItem key={booking.id} {...booking} />
+            ))}
+        </View>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  facilityItem: {
+  facilityBtn: {
     backgroundColor: "#EBEBEB",
     width: "95%",
     height: 50,
@@ -77,5 +88,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "left",
     marginLeft: 50,
+  },
+
+  dropdown: {
+    backgroundColor: "#E5E5E5",
+    marginTop: 5,
+    padding: 10,
   },
 });

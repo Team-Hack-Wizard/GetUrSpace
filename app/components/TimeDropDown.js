@@ -8,32 +8,29 @@ import {
   ScrollView,
 } from "react-native";
 
-export default function TimeDropDown({ onSelectTime }) {
-  const [selectedTime, setSelectedTime] = useState(null);
+export default function TimeDropDown({
+  onSelectTime,
+  startTime,
+  endTime,
+  value,
+}) {
+  // const [selectedTime, setSelectedTime] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const options = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00",
-    "22:00",
-    "23:00",
-  ];
+
+  const range = (start, stop, step) =>
+    Array.from(
+      { length: (stop - start) / step + 1 },
+      (_, i) => start + i * step
+    );
+
+  const options = range(startTime, endTime, 1).map((i) =>
+    i < 10 ? `0${i}:00` : i + ":00"
+  );
 
   const handleOptionPress = (option) => {
     setModalVisible(false);
     onSelectTime(option);
-    setSelectedTime(option.toString());
+    //setSelectedTime(option.toString());
   };
 
   return (
@@ -43,7 +40,7 @@ export default function TimeDropDown({ onSelectTime }) {
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.dropdownText}>
-          {selectedTime ? selectedTime : "Select Timing"}
+          {value ? value.toString() : "Select Timing"}
         </Text>
       </TouchableOpacity>
 

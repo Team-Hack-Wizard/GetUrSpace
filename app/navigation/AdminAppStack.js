@@ -3,6 +3,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import BookingsStack from "./BookingsStack";
+import AdminBookingsStack from "./AdminBookingsStack";
 import ProfileStack from "./ProfileStack";
 import AdminStack from "./AdminStack";
 
@@ -28,8 +29,8 @@ export default function AdminAppStack() {
       />
 
       <Tab.Screen
-        name="BookingsStack"
-        component={BookingsStack}
+        name="AdminBookingsStack"
+        component={AdminBookingsStack}
         initialParams={{ screen: "Bookings" }}
         options={{
           tabBarLabel: "Bookings",

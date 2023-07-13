@@ -13,10 +13,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { auth } from "../config/firebase";
+import { Feather } from '@expo/vector-icons';
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [securePassword, setSecurePassword] = useState(true);
+
+  const toggleSecurePassword = () => {
+    setSecurePassword(!securePassword);
+  }
 
   const errMsg = (msg) =>
     Alert.alert(
@@ -99,13 +105,16 @@ export default function LoginPage({ navigation }) {
 
       <View style={styles.inputView}>
         <TextInput
-          style={styles.inputText}
+          style={styles.passwordText}
           onChangeText={(text) => setPassword(text)}
           value={password}
           placeholder="Enter your password"
-          secureTextEntry={true}
+          secureTextEntry={securePassword}
           selectionColor="red"
         />
+        <TouchableOpacity style={styles.passwordIcon} onPress={toggleSecurePassword}>
+          <Feather name={securePassword ? "eye" : "eye-off"} size={24} color="grey" />
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
@@ -153,6 +162,7 @@ const styles = StyleSheet.create({
     height: 45,
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
     marginBottom: 20,
     backgroundColor: "#87cdee",
   },
@@ -161,6 +171,17 @@ const styles = StyleSheet.create({
     height: 50,
     flex: 1,
     textAlign: "center",
+  },
+
+  passwordText: {
+    height: 50,
+    flex: 1,
+    textAlign: "center",
+    paddingLeft: 40,
+  },
+
+  passwordIcon: {
+    padding: 10,
   },
 
   loginButton: {
