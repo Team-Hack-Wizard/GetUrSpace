@@ -1,10 +1,10 @@
 import { StyleSheet} from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import AdminFacilities from '../pages/AdminFacilities';
-import AdminBookings from '../pages/AdminBookings';
-import ManageFacilities from '../pages/ManageFacilities';
-import ManageGroupings from '../pages/ManageGroupings';
+import AdminFacilities from '../adminPages/AdminFacilities';
+import AdminBookings from '../adminPages/AdminBookings';
+import ManageFacilities from '../adminPages/ManageFacilities';
+import ManageGroupings from '../adminPages/ManageGroupings';
 
 
 export default function AdminStack() {
