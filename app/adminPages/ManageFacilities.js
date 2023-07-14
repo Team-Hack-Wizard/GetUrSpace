@@ -9,9 +9,9 @@ import { Msg } from '../functions'
 
 export default function ManageFacilities({ navigation, route }) {
   const { facilityId, facilityName, groupId, groupName, number } = route.params;
-  const [maxHours, setMaxHours] = useState(2);
-  const [maxPerHour, setMaxPerHour] = useState(1);
-  const [bookInAdvance, setBookInAdvance] = useState(7);
+  const [maxHours, setMaxHours] = useState('');
+  const [maxPerHour, setMaxPerHour] = useState('');
+  const [bookInAdvance, setBookInAdvance] = useState('');
   const [renameFacility, setRenameFacility] = useState('');
   const [numberOfFacilities, setNumberOfFacilities] = useState(1);
   const [firstBookingSlot, setFirstBookingSlot] = useState(null);
@@ -74,7 +74,7 @@ export default function ManageFacilities({ navigation, route }) {
       updateDoc(facilityRef, {
         maxHoursPerWeek: maxHours,
         maxPerHour: maxPerHour,
-        InAdvanceDays: bookInAdvance,
+        inAdvanceDays: bookInAdvance,
         number: numberOfFacilities,
         startTime: Number(firstBookingSlot.slice(0, 2)),
         endTime: Number(lastBookingSlot.slice(0, 2)),
