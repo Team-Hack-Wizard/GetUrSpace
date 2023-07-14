@@ -10,9 +10,8 @@ import Title from '../components/Title';
 import { db } from '../config/firebase';
 import {
   collection, query, where, doc, onSnapshot, getDoc, 
-  orderBy, runTransaction, deleteDoc, getDocs
+  orderBy, runTransaction, deleteDoc
 } from "firebase/firestore";
-import { Msg } from '../functions';
 
 const TIMEINTERVAL = 1; // in hours
 
@@ -20,7 +19,7 @@ export default function TimePage({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   // selected is in the format "i j" where i is the facility number(0 indexing) and j is the time index
   const [selected, setSelected] = useState(-1);
-  // bookings stores the list of bookings for the facility on the date (date is stored in curBooking)
+  // bookings stores the list of bookings for the facility on the date (that is stored in curBooking)
   const [bookings, setBookings] = useState([]);
   // available stores the list of available timings for the facility on the date
   // format: [[8,9,10], [...], ...] where ith array is the available timings for the ith facility
@@ -62,25 +61,6 @@ export default function TimePage({ navigation, route }) {
     selectedValue = selected.split(" ");
     newBooking.time = parseInt(available[selectedValue[0]][selectedValue[1]]);
     newBooking.facilityNumber = parseInt(selected.charAt(0)) + 1;
-
-    // check for maxPerhour limit, if limit is reached, alert user
-    // (prevents users from trying to book for multiple facilities at the same time)
-    const q = query(collection(db, "bookings"), where("userId", "==", newBooking.userId),
-      where("facilityId", "==", newBooking.facilityId), where("date", "==", newBooking.date), 
-      where("time", "==", newBooking.time));
-    const snapShot = await getDocs(q);
-    const count = snapShot.size;
-
-    const facilityDoc = await getDoc(doc(db, "facilities", newBooking.facilityId));
-    const maxPerHour = facilityDoc.data().maxPerHour;
-    if (count >= maxPerHour) {
-      Msg("Max Bookings Per Hour Reached", 
-        `You have reached the maximum number of bookings for this facility per hour (${maxPerHour}). ` + 
-        "Please try to book for another timing!")
-      return;
-    }
-
-    // proceed with booking
     // empty doc ref to be used later for transaction writing
     const bookingRef = doc(collection(db, "bookings"));
     try {
