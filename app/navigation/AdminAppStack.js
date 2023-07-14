@@ -2,9 +2,8 @@ import { StyleSheet } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
-import BookingsStack from "./BookingsStack";
 import AdminBookingsStack from "./AdminBookingsStack";
-import ProfileStack from "./ProfileStack";
+import AdminProfile from "../adminpages/AdminProfile";
 import AdminStack from "./AdminStack";
 
 export default function AdminAppStack() {
@@ -45,8 +44,8 @@ export default function AdminAppStack() {
       />
 
       <Tab.Screen
-        name="ProfileStack"
-        component={ProfileStack}
+        name="Profile"
+        component={AdminProfile}
         options={{
           tabBarLabel: "Profile",
           headerShown: false,

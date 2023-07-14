@@ -14,7 +14,6 @@ export default function FacilityButton({
   groupId,
   groupName,
   number,
-  bookings,
 }) {
   const [expanded, setExpanded] = useState(false);
   const toggleDropdown = () => {
@@ -55,7 +54,7 @@ export default function FacilityButton({
         <View style={styles.iconContainer}>{renderIcon(facilityName)}</View>
         <Text style={styles.facilityName}>{facilityName}</Text>
       </TouchableOpacity>
-      {expanded && (
+      {/* {expanded && (
         <View style={styles.dropdown}>
           {bookings
             .filter((booking) => booking.facilityId === facilityId)
@@ -63,7 +62,7 @@ export default function FacilityButton({
                 <BookingItem key={booking.id} {...booking} />
             ))}
         </View>
-      )}
+      )} */}
     </View>
   );
 }

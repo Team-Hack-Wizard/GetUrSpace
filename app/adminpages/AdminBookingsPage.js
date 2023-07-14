@@ -103,7 +103,6 @@ export default function AdminBookingsPage({ navigation }) {
                   groupId={item.id}
                   groupName={item.name}
                   number={facility.number}
-                  bookings={bookings}
                 />
               );
             })}
