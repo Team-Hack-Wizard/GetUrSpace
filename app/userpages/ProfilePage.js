@@ -21,6 +21,7 @@ import {
   FontAwesome,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 export default function ProfilePage({ navigation, route }) {
   const [name, setName] = useState("");
@@ -66,8 +67,7 @@ export default function ProfilePage({ navigation, route }) {
         {
           text: "Yes",
           onPress: () => {
-            auth
-              .sendPasswordResetEmail(auth.currentUser.email)
+            sendPasswordResetEmail(auth, auth.currentUser.email)
               .then(() => {
                 Alert.alert(
                   "",
@@ -122,6 +122,8 @@ export default function ProfilePage({ navigation, route }) {
     }));
   };
 
+  // Contact Us form implementation is to be determined later
+  // might change to birnging user to email app with address filled in
   const submitForm = () => {
     console.log("Form Data:", formData);
     setFormData({ name: "", email: "", message: "" });
