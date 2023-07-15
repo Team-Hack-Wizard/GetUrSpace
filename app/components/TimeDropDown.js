@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+} from "react-native";
 
-export default function TimeDropDown({ onSelectTime, startTime, endTime, value }) {
+export default function TimeDropDown({
+  onSelectTime,
+  startTime,
+  endTime,
+  value,
+}) {
   // const [selectedTime, setSelectedTime] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const range = (start, stop, step) =>
-    Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+    Array.from(
+      { length: (stop - start) / step + 1 },
+      (_, i) => start + i * step
+    );
 
-  const options = range(startTime, endTime, 1).map((i) => i < 10 ? `0${i}:00` : (i + ':00'))
+  const options = range(startTime, endTime, 1).map((i) =>
+    i < 10 ? `0${i}:00` : i + ":00"
+  );
 
   const handleOptionPress = (option) => {
     setModalVisible(false);
@@ -18,9 +35,12 @@ export default function TimeDropDown({ onSelectTime, startTime, endTime, value }
 
   return (
     <>
-      <TouchableOpacity style={styles.dropdown} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        style={styles.dropdown}
+        onPress={() => setModalVisible(true)}
+      >
         <Text style={styles.dropdownText}>
-          {value ? value.toString() : 'Select Timing'}
+          {value ? value.toString() : "Select Timing"}
         </Text>
       </TouchableOpacity>
 
@@ -53,13 +73,13 @@ export default function TimeDropDown({ onSelectTime, startTime, endTime, value }
 
 const styles = StyleSheet.create({
   dropdown: {
-    width: '90%',
+    width: "90%",
     borderRadius: 10,
     height: 40,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
     marginBottom: 20,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: "#E5E5E5",
     paddingHorizontal: 16,
   },
 
@@ -69,23 +89,23 @@ const styles = StyleSheet.create({
 
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: 16,
     maxHeight: 300,
-    width: '90%',
+    width: "90%",
     elevation: 5,
   },
 
   option: {
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: "#E5E5E5",
   },
 
   optionText: {
@@ -94,11 +114,11 @@ const styles = StyleSheet.create({
 
   closeButton: {
     marginTop: 16,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
   },
 
   closeButtonText: {
-    color: '#094074',
+    color: "#094074",
     fontSize: 16,
   },
 });

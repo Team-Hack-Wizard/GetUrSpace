@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function Title({ data }) {
+export default function InfoBox({ data }) {
   return (
     <View style={styles.box}>
       <Text style={styles.text}>{data}</Text>
@@ -11,18 +11,18 @@ export default function Title({ data }) {
 
 const styles = StyleSheet.create({
   box: {
-    backgroundColor: "#094074",
-    width: "95%",
+    width: "90%",
+    borderRadius: 10,
     height: 40,
-    marginVertical: 20,
     alignSelf: "center",
     justifyContent: "center",
+    marginBottom: 20,
+    backgroundColor: "#E5E5E5",
+    paddingHorizontal: 16,
   },
 
   text: {
-    color: "white",
-    fontSize: 15,
-    textAlign: "left",
-    marginLeft: 20,
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

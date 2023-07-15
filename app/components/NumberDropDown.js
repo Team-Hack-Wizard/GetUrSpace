@@ -1,23 +1,33 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+} from "react-native";
 
 export default function NumberDropDown({ onSelectNumber, maxNumber }) {
-    const [selectedNumber, setSelectedNumber] = useState(null);
-    const [modalVisible, setModalVisible] = useState(false);
-    // options range from 1 to maxNumber
-    const options = Array.from(Array(maxNumber).keys()).map((i) => i + 1);
+  const [selectedNumber, setSelectedNumber] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  // options range from 1 to maxNumber
+  const options = Array.from(Array(maxNumber).keys()).map((i) => i + 1);
 
-    const handleOptionPress = (option) => {
-        setModalVisible(false);
-        onSelectNumber(option);
-        setSelectedNumber(option.toString());
-    };
+  const handleOptionPress = (option) => {
+    setModalVisible(false);
+    onSelectNumber(option);
+    setSelectedNumber(option.toString());
+  };
 
   return (
     <>
-      <TouchableOpacity style={styles.dropdown} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        style={styles.dropdown}
+        onPress={() => setModalVisible(true)}
+      >
         <Text style={styles.dropdownText}>
-            {selectedNumber ? selectedNumber : 'Select Number'}
+          {selectedNumber ? selectedNumber : "Select Number"}
         </Text>
       </TouchableOpacity>
 
@@ -50,13 +60,13 @@ export default function NumberDropDown({ onSelectNumber, maxNumber }) {
 
 const styles = StyleSheet.create({
   dropdown: {
-    width: '90%',
+    width: "90%",
     borderRadius: 10,
     height: 40,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
     marginBottom: 20,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: "#E5E5E5",
     paddingHorizontal: 16,
   },
 
@@ -66,23 +76,23 @@ const styles = StyleSheet.create({
 
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: 16,
     maxHeight: 300,
-    width: '90%',
+    width: "90%",
     elevation: 5,
   },
 
   option: {
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: "#E5E5E5",
   },
 
   optionText: {
@@ -91,11 +101,11 @@ const styles = StyleSheet.create({
 
   closeButton: {
     marginTop: 16,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
   },
 
   closeButtonText: {
-    color: '#094074',
+    color: "#094074",
     fontSize: 16,
   },
 });

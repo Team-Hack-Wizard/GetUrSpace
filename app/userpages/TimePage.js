@@ -1,17 +1,31 @@
 import {
-  Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,
-  ActivityIndicator
-} from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { MaterialIcons } from '@expo/vector-icons'
-import TimeBtn from '../components/TimeBtn'
-import Title from '../components/Title';
-import { db } from '../config/firebase';
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
+import TimeBtn from "../components/TimeBtn";
+import Title from "../components/Title";
+import { db } from "../config/firebase";
 import {
-  collection, query, where, doc, onSnapshot, getDoc, 
-  orderBy, runTransaction, deleteDoc
+  collection,
+  query,
+  where,
+  doc,
+  onSnapshot,
+  getDoc,
+  orderBy,
+  runTransaction,
+  deleteDoc,
+  getDocs,
 } from "firebase/firestore";
+import { Msg } from "../functions";
 
 const TIMEINTERVAL = 1; // in hours
 
@@ -19,7 +33,7 @@ export default function TimePage({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   // selected is in the format "i j" where i is the facility number(0 indexing) and j is the time index
   const [selected, setSelected] = useState(-1);
-  // bookings stores the list of bookings for the facility on the date (that is stored in curBooking)
+  // bookings stores the list of bookings for the facility on the date (date is stored in curBooking)
   const [bookings, setBookings] = useState([]);
   // available stores the list of available timings for the facility on the date
   // format: [[8,9,10], [...], ...] where ith array is the available timings for the ith facility
@@ -36,21 +50,23 @@ export default function TimePage({ navigation, route }) {
   //   facilityNumber: 0,
   // };
 
-  const errMsg = (title, msg) => Alert.alert(
-    title, msg,
-    [
-      {
-        text: "Cancel",
-        //onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      { text: "OK" }
-    ],
-    { cancelable: false }
-  );
+  const errMsg = (title, msg) =>
+    Alert.alert(
+      title,
+      msg,
+      [
+        {
+          text: "Cancel",
+          //onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "OK" },
+      ],
+      { cancelable: false }
+    );
 
   const handleReturn = () => {
-    navigation.navigate('Date', curBooking);
+    navigation.navigate("Date", curBooking);
     // pass the booking data back to the date page, though Date should still
     // have the booking data from the previous page
   };
@@ -61,6 +77,33 @@ export default function TimePage({ navigation, route }) {
     selectedValue = selected.split(" ");
     newBooking.time = parseInt(available[selectedValue[0]][selectedValue[1]]);
     newBooking.facilityNumber = parseInt(selected.charAt(0)) + 1;
+
+    // check for maxPerhour limit, if limit is reached, alert user
+    // (prevents users from trying to book for multiple facilities at the same time)
+    const q = query(
+      collection(db, "bookings"),
+      where("userId", "==", newBooking.userId),
+      where("facilityId", "==", newBooking.facilityId),
+      where("date", "==", newBooking.date),
+      where("time", "==", newBooking.time)
+    );
+    const snapShot = await getDocs(q);
+    const count = snapShot.size;
+
+    const facilityDoc = await getDoc(
+      doc(db, "facilities", newBooking.facilityId)
+    );
+    const maxPerHour = facilityDoc.data().maxPerHour;
+    if (count >= maxPerHour) {
+      Msg(
+        "Max Bookings Per Hour Reached",
+        `You have reached the maximum number of bookings for this facility per hour (${maxPerHour}). ` +
+          "Please try to book for another timing!"
+      );
+      return;
+    }
+
+    // proceed with booking
     // empty doc ref to be used later for transaction writing
     const bookingRef = doc(collection(db, "bookings"));
     try {
@@ -75,41 +118,53 @@ export default function TimePage({ navigation, route }) {
         //  date2: {time3: [facilityNum3, facilityNum4, ...]}, ....
         // }
         // create the new booking object to update into the bookings field of facility
-        const bookingIds = { ...(facilityDoc.data().bookings)};
-        // check if the booking slot has already been taken by searching 
+        const bookingIds = { ...facilityDoc.data().bookings };
+        // check if the booking slot has already been taken by searching
         // for the same booking details in the bookings collection
         if (!bookingIds[newBooking.date]) {
           // if the date is not in the bookings field, create a new object
           // then add the booking id to the array of date: {time: []}
           bookingIds[newBooking.date] = {};
-          bookingIds[newBooking.date][newBooking.time] = [newBooking.facilityNumber];
+          bookingIds[newBooking.date][newBooking.time] = [
+            newBooking.facilityNumber,
+          ];
         } else if (!bookingIds[newBooking.date][newBooking.time]) {
           // if the time is not in the bookings field, create a new array with the booking id
-          bookingIds[newBooking.date][newBooking.time] = [newBooking.facilityNumber];
-        } else if (!bookingIds[newBooking.date][newBooking.time].includes(newBooking.facilityNumber)) {
+          bookingIds[newBooking.date][newBooking.time] = [
+            newBooking.facilityNumber,
+          ];
+        } else if (
+          !bookingIds[newBooking.date][newBooking.time].includes(
+            newBooking.facilityNumber
+          )
+        ) {
           // if the facilityNumber is not in the array, add it to the array of bookings
-          bookingIds[newBooking.date][newBooking.time].push(newBooking.facilityNumber);
+          bookingIds[newBooking.date][newBooking.time].push(
+            newBooking.facilityNumber
+          );
         } else {
-          // It must then be the case that the booking id is already in the array, 
+          // It must then be the case that the booking id is already in the array,
           // the slot has been taken
           throw "This booking slot has already been taken!";
         }
 
         transaction.set(bookingRef, newBooking);
         transaction.update(facilityRef, {
-          bookings: bookingIds
+          bookings: bookingIds,
         });
       });
-      errMsg("Success", "Your booking is successful! You can view it at the bookings page.");
-      navigation.navigate('Facilities');
+      errMsg(
+        "Success",
+        "Your booking is successful! You can view it at the bookings page."
+      );
+      navigation.navigate("Facilities");
     } catch (e) {
       console.log("Transaction failed: ", e);
       errMsg("Error", "Transaction failed: " + e + " Please try again later!");
       // if there is any error, we will delete that booking
       await deleteDoc(bookingRef);
-      setSelected(-1);  // reset selected and it should refresh the page
+      setSelected(-1); // reset selected and it should refresh the page
     }
-
   };
 
   const handlePress = (id) => {
@@ -118,10 +173,16 @@ export default function TimePage({ navigation, route }) {
 
   // listens to any changes to the bookings for the facility on the date
   useEffect(() => {
-    const q = query(collection(db, "bookings"), where("facilityId", "==", curBooking.facilityId),
-      where("date", "==", curBooking.date), orderBy("time"));
+    const q = query(
+      collection(db, "bookings"),
+      where("facilityId", "==", curBooking.facilityId),
+      where("date", "==", curBooking.date),
+      orderBy("time")
+    );
     const unsubscribe = onSnapshot(q, async (snapShot) => {
-      let newBookings = await Promise.all(snapShot.docs.map(doc => doc.data()));
+      let newBookings = await Promise.all(
+        snapShot.docs.map((doc) => doc.data())
+      );
       setBookings(newBookings);
     });
     return unsubscribe;
@@ -130,12 +191,15 @@ export default function TimePage({ navigation, route }) {
   // Sequence generator function (commonly referred to as "range", e.g. Clojure, PHP, etc.)
   // inclusive of start and stop
   const range = (start, stop, step) =>
-    Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+    Array.from(
+      { length: (stop - start) / step + 1 },
+      (_, i) => start + i * step
+    );
 
   // on changes to bookings, update the available timings
   useEffect(() => {
     if (!loading) setLoading(true);
-    const moment = require('moment-timezone');
+    const moment = require("moment-timezone");
     const sgDate = moment().tz("Asia/Singapore").format("YYYY-MM-DD");
     const sgHour = moment().tz("Asia/Singapore").hours();
     let newAvailable = [];
@@ -148,20 +212,31 @@ export default function TimePage({ navigation, route }) {
       /////////////// some error handling for facility data ///////////////
       if (typeof facility.startTime === "string") {
         facility.startTime = Number(facility.startTime.split(":")[0]);
-        console.log("facitlity start time not a number, facilityId: ", curBooking.facilityId);
+        console.log(
+          "facitlity start time not a number, facilityId: ",
+          curBooking.facilityId
+        );
       }
       if (typeof facility.endTime === "string") {
         facility.endTime = Number(facility.endTime.split(":")[0]);
-        console.log("facitlity end time not a number, facilityId: ", curBooking.facilityId);
+        console.log(
+          "facitlity end time not a number, facilityId: ",
+          curBooking.facilityId
+        );
       }
       if (typeof facility.number !== "number") {
         facility.number = Number(facility.number);
-        console.log("facitlity number not a number type, facilityId: ", curBooking.facilityId);
+        console.log(
+          "facitlity number not a number type, facilityId: ",
+          curBooking.facilityId
+        );
       }
       /////////////////////////////////////////////////////////////////////
       // if user is booking for today, the minTime is the current hour
-      const minTime = (curBooking.date == sgDate ? 
-        Math.max(sgHour, facility.startTime) : facility.startTime);
+      const minTime =
+        curBooking.date == sgDate
+          ? Math.max(sgHour, facility.startTime)
+          : facility.startTime;
       const timeArr = range(minTime, facility.endTime, TIMEINTERVAL);
       // duplicate the array for the number of facilities
       for (let i = 0; i < facility.number; i++) {
@@ -172,22 +247,26 @@ export default function TimePage({ navigation, route }) {
         const { time, facilityNumber } = booking;
         // mark the time slot in the array as booked (with -1)
         try {
-          newAvailable[(facilityNumber - 1)][(time - facility.startTime)] = -1;
+          newAvailable[facilityNumber - 1][time - facility.startTime] = -1;
         } catch (e) {
           console.log("error in marking booked time as booked: ", e);
           console.log("booking: ", booking);
-          console.log("facilityNumber = ", (facilityNumber));
-          console.log("facilityNumber - 1 = ", (facilityNumber - 1));
-          console.log("time - facility.startTime = ", time - facility.startTime);
+          console.log("facilityNumber = ", facilityNumber);
+          console.log("facilityNumber - 1 = ", facilityNumber - 1);
+          console.log(
+            "time - facility.startTime = ",
+            time - facility.startTime
+          );
         }
       }
       // filter out the booked timings marked as -1 and save it in available state
-      setAvailable(newAvailable.map(arr => arr.filter(time => time !== -1)));
+      setAvailable(
+        newAvailable.map((arr) => arr.filter((time) => time !== -1))
+      );
       setLoading(false);
     }
     getFacility();
   }, [bookings]);
-
 
   if (loading === true) {
     return (
@@ -198,7 +277,9 @@ export default function TimePage({ navigation, route }) {
           </TouchableOpacity>
           <Text style={styles.selectTime}>Select Time</Text>
         </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <Text>Loading</Text>
           <ActivityIndicator size="large" />
         </View>
@@ -234,25 +315,25 @@ export default function TimePage({ navigation, route }) {
         </ScrollView>
 
         <TouchableOpacity
-          style={[styles.bookNowBtn, { backgroundColor: selected === -1 ? '#E6E6E6' : '#094074' }]}
+          style={[
+            styles.bookNowBtn,
+            { backgroundColor: selected === -1 ? "#E6E6E6" : "#094074" },
+          ]}
           onPress={handleBook}
           disabled={selected === -1}
         >
           <Text style={styles.bookNowText}>Book Now</Text>
         </TouchableOpacity>
-
       </SafeAreaView>
-    )
-
+    );
   }
-
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
   },
 
   main: {
@@ -267,7 +348,7 @@ const styles = StyleSheet.create({
   },
 
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 10,
   },
 
@@ -276,9 +357,9 @@ const styles = StyleSheet.create({
   },
 
   buttonGroup: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignContent: "center",
     marginHorizontal: 10,
   },
 
@@ -293,8 +374,8 @@ const styles = StyleSheet.create({
   },
 
   bookNowText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
     textAlign: "center",
   },
-})
+});

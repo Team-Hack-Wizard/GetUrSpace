@@ -1,19 +1,41 @@
-import { StyleSheet, Text, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  query, collection, where, doc, updateDoc, onSnapshot, deleteDoc, getDoc, orderBy,
-  getDocs, Timestamp
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  query,
+  collection,
+  where,
+  doc,
+  updateDoc,
+  onSnapshot,
+  deleteDoc,
+  getDoc,
+  orderBy,
+  getDocs,
+  Timestamp,
 } from "firebase/firestore";
-import BookingItem from '../components/BookingItem'
-import { auth, db } from '../config/firebase'
+import BookingItem from "../components/BookingItem";
+import { auth, db } from "../config/firebase";
+import { AntDesign } from "@expo/vector-icons";
 
-export default function BookingsPage() {
-  // bookings in this format: 
+export default function BookingsPage({ navigation }) {
+  // bookings in this format:
   // [{ id: '1', facility: 'MPH', venue: 'PGPR', date: '8 July', time: '11.30'}, ... ]
   const [bookings, setBookings] = useState([]);
 
-  const handleCancelBooking = async (bookingId, facilityId, facilityNumber, date, time) => {
+  const handleCancelBooking = async (
+    bookingId,
+    facilityId,
+    facilityNumber,
+    date,
+    time
+  ) => {
     try {
       // the onSnapshot listener below will update the bookings state after database is updated
       // so we don't need to update the bookings state here
@@ -23,35 +45,41 @@ export default function BookingsPage() {
       // bookings: {date1: {time1: [bookingId1, bookingId2], time2: [...],...},
       //      date2: {time1: [bookingId3, bookingId4], ...}...}
       const facilityDoc = await getDoc(facilityRef);
-      if (facilityDoc.exists()) { 
-        const facilityBookings = { ...(facilityDoc.data().bookings) };
-        facilityBookings[date][time] = (facilityBookings[date][time]).filter((num) => num != facilityNumber);
+      if (facilityDoc.exists()) {
+        const facilityBookings = { ...facilityDoc.data().bookings };
+        facilityBookings[date][time] = facilityBookings[date][time].filter(
+          (num) => num != facilityNumber
+        );
         updateDoc(facilityRef, {
-          "bookings": facilityBookings
+          bookings: facilityBookings,
         });
       } else {
-        console.log("No such facility! Possibilly deleted by admin.");
+        console.log("No such facility! Possibly deleted by admin.");
       }
       await deleteDoc(bookingRef);
     } catch (e) {
       console.log(e);
     }
-
   };
 
   // convert time in number to string of HH:00
   const parseTime = (time) => {
-    const timeString = time < 10 ? `0${time+1}:00` : `${time+1}:00`;
+    const timeString = time < 10 ? `0${time + 1}:00` : `${time + 1}:00`;
     return timeString;
-  }
+  };
 
   // get bookings from database
   // update bookings state whenever there is a change in the bookings with the user's id
   // [{ id: '1', facility: 'MPH', venue: 'PGPR', date: '8 July', time: '11.30'}, ... ]
   useEffect(() => {
-    const q = query(collection(db, "bookings"), where("userId", "==", auth.currentUser.uid),
-      orderBy("date"), orderBy("time"), orderBy("facilityName"));
-    const moment = require('moment-timezone');
+    const q = query(
+      collection(db, "bookings"),
+      where("userId", "==", auth.currentUser.uid),
+      orderBy("date"),
+      orderBy("time"),
+      orderBy("facilityName")
+    );
+    const moment = require("moment-timezone");
     const sgTime = moment().tz("Asia/Singapore").format();
     const unsubscribe = onSnapshot(q, async (querySnapshot) => {
       let bookings = [];
@@ -68,30 +96,38 @@ export default function BookingsPage() {
           } catch (e) {
             console.log(e);
           }
-
         } else {
           bookings.push({
-            id: doc.id,  // booking id
+            id: doc.id, // booking id
             facility: data.facilityName,
             facilityId: data.facilityId,
             facilityNumber: data.facilityNumber,
             venue: data.groupName,
             date: data.date,
             time: data.time,
-          })
+          });
         }
-
       });
       setBookings(bookings);
     });
     return unsubscribe;
+  }, []);
 
-  }, [])
+  const handlePress = () => {
+    navigation.navigate("Previous Bookings");
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
       <SafeAreaView style={styles.container}>
-        <Text style={styles.main}>Bookings</Text>
+        <View style={styles.box}>
+          <View style={styles.header}>
+            <Text style={styles.main}>Bookings</Text>
+          </View>
+          <TouchableOpacity onPress={handlePress}>
+            <AntDesign name="calendar" size={30} color="black" />
+          </TouchableOpacity>
+        </View>
         {bookings.map((booking) => (
           <BookingItem
             key={booking.id}
@@ -107,14 +143,14 @@ export default function BookingsPage() {
         ))}
       </SafeAreaView>
     </ScrollView>
-  )
-};
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
   },
 
   main: {
@@ -123,4 +159,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
-})
+
+  header: {
+    marginLeft: 120,
+  },
+
+  box: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    alignSelf: "center",
+    width: "90%",
+  },
+});

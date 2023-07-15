@@ -1,8 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 
-export default function BookingItem({
+export default function PrevBookingItem({
   id,
   facility,
   facilityId,
@@ -10,28 +10,7 @@ export default function BookingItem({
   venue,
   date,
   time,
-  onCancel,
 }) {
-  //confirmation message to cancel booking
-  const handleCancelBooking = () => {
-    Alert.alert(
-      "Cancel Booking",
-      "Are you sure you want to cancel this booking?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Confirm",
-          style: "destructive",
-          onPress: () => onCancel(id, facilityId, facilityNumber, date, time),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-
   // convert time in number to string of HH:00
   const parseTime = (time) => {
     const timeString = time < 10 ? `0${time}:00` : `${time}:00`;
@@ -69,12 +48,6 @@ export default function BookingItem({
           <Text style={styles.body}>Date: {date}</Text>
           <Text style={styles.body}>Time: {parseTime(time)}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.cancelBtn}
-          onPress={handleCancelBooking}
-        >
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -113,26 +86,5 @@ const styles = StyleSheet.create({
   body: {
     fontSize: 16,
     color: "#7A7A7A",
-  },
-
-  cancelBtn: {
-    height: 30,
-    width: 90,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: "black",
-    marginTop: 45,
-    marginLeft: 70,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-    top: 0,
-    right: 15,
-  },
-
-  cancelText: {
-    fontSize: 16,
-    color: "red",
-    fontWeight: "bold",
   },
 });
