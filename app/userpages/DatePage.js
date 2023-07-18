@@ -20,19 +20,20 @@ import {
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { Msg } from "../functions";
+import moment from "moment";
 
 export default function DatePage({ navigation, route }) {
   const booking = route.params;
   const [selectedDate, setSelectedDate] = useState("");
   const [loading, setLoading] = useState(true);
-
-  // this ensures that the date always follows the singapore timezone date
-  const moment = require("moment-timezone");
-  const sgDate = moment().tz("Asia/Singapore");
-  const minDate = sgDate.format("YYYY-MM-DD");
+  const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
 
   useEffect(() => {
+    // this ensures that the date always follows the singapore timezone date
+    //const moment = require("moment-timezone");
+    const sgDate = moment().tz("Asia/Singapore");
+    setMinDate(sgDate.subtract(1, 'd').format("YYYY-MM-DD"));
     const facilityRef = doc(db, "facilities", booking.facilityId);
     const unsubscribe = onSnapshot(facilityRef, async (facilityDoc) => {
       if (!loading) setLoading(true);

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TextBox from "../components/TextBox";
 import { auth, db } from "../config/firebase";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect } from "react";
 
 export default function ProfilePage({ navigation, route }) {

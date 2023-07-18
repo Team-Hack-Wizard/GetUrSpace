@@ -2,10 +2,10 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  ScrollView,
+  TouchableOpacity, 
   FlatList,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,67 +15,43 @@ import FacilityButton from "../components/FacilityButton";
 import { auth, db } from "../config/firebase";
 import {
   doc,
-  onSnapshot,
-  getDoc,
-  getDocs,
-  collection,
-  updateDoc,
+  onSnapshot, 
 } from "firebase/firestore";
 
 export default function AdminBookingsPage({ navigation }) {
   const [loading, setLoading] = useState(true);
-  const [bookings, setBookings] = useState([]);
-  const [listData, setListData] = useState([]);
+  const [groups, setGroups] = useState([]); 
   const handlePress = () => {
     navigation.navigate("Previous Bookings");
   };
 
-  const userRef = doc(db, "users", auth.currentUser.uid);
-  // get snapshots of user's groups
-  // listens to any changes to user's groups
-  // gets all the groups and facilities info from the user document
+  // get the list of bookings under the group that the admin is managing
+  // in a nested object of group -> [facilities] -> [bookings]
   useEffect(() => {
+    const userRef = doc(db, "users", auth.currentUser.uid);
     const unsubscribe = onSnapshot(userRef, async (userDoc) => {
       if (!loading) setLoading(true);
       const groups = await userDoc.get("groups");
-      // we want to pass in to listData: [{id: group1Id, name: groupName,
-      //  data: [{id: 1, name: "facility1", number: x}, {id: 2, name: "facility2", number: x}, ...]}, ...]
-      let curListData = await Promise.all(
-        groups.map(async (group) => {
-          return {
-            id: group.groupId,
-            name: group.groupName,
-            data: await Promise.all(
-              group.facilities.map(async (facility) => {
-                const facilityDoc = await getDoc(
-                  doc(db, "facilities", facility.facilityId)
-                );
-                return {
-                  id: facility.facilityId,
-                  name: facility.facilityName,
-                  number: facilityDoc.data().number,
-                };
-              })
-            ),
-          };
-        })
-      );
-      setListData(curListData);
+      setGroups(groups); 
       if (loading) setLoading(false);
-    });
-
-    const bookingsRef = collection(db, "bookings");
-    const unsubscribeBookings = onSnapshot(bookingsRef, (querySnapshot) => {
-      const bookingsData = querySnapshot.docs.map((doc) => doc.data());
-      setBookings(bookingsData);
-    });
-    return () => {
-      unsubscribe();
-      unsubscribeBookings();
-    };
+    }); 
+    return unsubscribe;
   }, []);
 
   const windowHeight = Dimensions.get("window").height;
+
+  if (loading) {
+    return (
+      <SafeAreaView styles={styles.container}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>Loading</Text>
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,20 +65,17 @@ export default function AdminBookingsPage({ navigation }) {
       </View>
 
       <FlatList
-        data={listData}
-        keyExtractor={(item) => item.id.toString()}
+        data={groups}
+        keyExtractor={(item) => item.groupId}
         renderItem={({ item }) => (
           <>
-            <Title data={item.name} />
-            {item.data.map((facility) => {
+            <Title data={item.groupName} />
+            {item.facilities.map((facility) => {
               return (
                 <FacilityButton
-                  key={facility.id}
-                  facilityId={facility.id}
-                  facilityName={facility.name}
-                  groupId={item.id}
-                  groupName={item.name}
-                  number={facility.number}
+                  key={facility.facilityId}
+                  facilityId={facility.facilityId}
+                  facilityName={facility.facilityName}
                 />
               );
             })}

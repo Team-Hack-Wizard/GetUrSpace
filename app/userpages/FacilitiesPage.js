@@ -16,24 +16,19 @@ import { auth, db } from "../config/firebase";
 import {
   doc,
   onSnapshot,
-  getDoc,
-  getDocs,
-  collection,
-  updateDoc,
 } from "firebase/firestore";
 
 export default function FacilitiesPage() {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  // tracks the groups the user is in
-  const [groups, setGroups] = useState([]);
   // tracks the list of facilities in each group in the following format
   // [{id: group1Id, name: groupName,
   //  data: [{id: 1, name: "facility1"}, ...]}, ...]
   const [listData, setListData] = useState([]);
   const booking = {
     userId: auth.currentUser.uid,
+    userEmail: auth.currentUser.email,
     facilityId: "",
     facilityName: "",
     groupId: "",

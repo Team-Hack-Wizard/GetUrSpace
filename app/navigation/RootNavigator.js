@@ -75,7 +75,7 @@ export const RootNavigator = () => {
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <Text>
-            Unknown Error, Please try again later, or email the developer!
+            Unknown Error. Wrong role type. Please email the developer!
           </Text>
         </View>
       )}

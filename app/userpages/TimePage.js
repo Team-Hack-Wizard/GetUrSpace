@@ -1,5 +1,4 @@
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -26,6 +25,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { Msg } from "../functions";
+import moment from 'moment';
 
 const TIMEINTERVAL = 1; // in hours
 
@@ -41,6 +41,7 @@ export default function TimePage({ navigation, route }) {
   const curBooking = route.params;
   // object of booking: {
   //   userId: auth.currentUser.uid,
+  //   userEmail: auth.currentUser.email,
   //   facilityId: FilLED IN BY FACILITIES PAGE,
   //   facilityName: FILLED IN BY FACILITIES PAGE,
   //   groupId: FILLED IN BY FACILITIES PAGE,
@@ -49,21 +50,6 @@ export default function TimePage({ navigation, route }) {
   //   time: '',
   //   facilityNumber: 0,
   // };
-
-  const errMsg = (title, msg) =>
-    Alert.alert(
-      title,
-      msg,
-      [
-        {
-          text: "Cancel",
-          //onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK" },
-      ],
-      { cancelable: false }
-    );
 
   const handleReturn = () => {
     navigation.navigate("Date", curBooking);
@@ -153,14 +139,14 @@ export default function TimePage({ navigation, route }) {
           bookings: bookingIds,
         });
       });
-      errMsg(
+      Msg(
         "Success",
         "Your booking is successful! You can view it at the bookings page."
       );
       navigation.navigate("Facilities");
     } catch (e) {
       console.log("Transaction failed: ", e);
-      errMsg("Error", "Transaction failed: " + e + " Please try again later!");
+      Msg("Error", "Transaction failed: " + e + " Please try again later!");
       // if there is any error, we will delete that booking
       await deleteDoc(bookingRef);
       setSelected(-1); // reset selected and it should refresh the page
@@ -199,7 +185,6 @@ export default function TimePage({ navigation, route }) {
   // on changes to bookings, update the available timings
   useEffect(() => {
     if (!loading) setLoading(true);
-    const moment = require("moment-timezone");
     const sgDate = moment().tz("Asia/Singapore").format("YYYY-MM-DD");
     const sgHour = moment().tz("Asia/Singapore").hours();
     let newAvailable = [];
