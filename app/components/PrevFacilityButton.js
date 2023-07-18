@@ -1,26 +1,21 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState, useEffect } from "react";
-import { renderIcon } from "../functions";
 import BookingItem from "./BookingItem";
 import {
   collection,
-  doc,
   onSnapshot,
   where,
   orderBy,
   query,
-  getDoc,
-  updateDoc,
-  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
-import Msg from "../functions/Msg";
 import moment from "moment";
+import { renderIcon } from "../functions";
 
 // facility button receives bookings array where each booking is an object of booking info
 // eg: [{facilityId: , facilityName: , groupId: , groupName: ,
 // bookings: [{date: , time: , facilityNumber: , userId: , bookingId: },...]}, ... ]
-export default function FacilityButton({ facilityId, facilityName }) {
+export default function PrevFacilityButton({ facilityId, facilityName }) {
   const [expanded, setExpanded] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +26,7 @@ export default function FacilityButton({ facilityId, facilityName }) {
     const bookingQuery = query(
       collection(db, "bookings"),
       where("facilityId", "==", facilityId),
-      where("date", ">=", sgTime.format("YYYY-MM-DD")),
+      where("date", "<=", sgTime.format("YYYY-MM-DD")),
       orderBy("date"),
       orderBy("time")
     );
@@ -42,8 +37,8 @@ export default function FacilityButton({ facilityId, facilityName }) {
         const date = booking.date;
         const time = booking.time;
         const bookingTime = moment(date).hour(time);
-        // ensure that this is a future booking
-        if (bookingTime.isAfter(sgTime)) {
+        // ensure that this is a past booking
+        if (bookingTime.isBefore(sgTime)) {
           newBookings.push({
             date: booking.date,
             time: booking.time,
@@ -61,43 +56,6 @@ export default function FacilityButton({ facilityId, facilityName }) {
 
   const toggleDropdown = () => {
     setExpanded(!expanded);
-  };
-
-  const handleCancelBooking = async (
-    id,
-    facilityId,
-    facilityNumber,
-    date,
-    time
-  ) => {
-    // cancel bookings in booking collection
-    // and remove facilityNumber from the time slot in facility doc's bookings object
-    // TODO: inform user that his booking has been cancelled
-    try {
-      // once deleted from database, onSnapshot will not be triggered
-      // and update the bookings state
-      const bookingRef = doc(db, "bookings", id);
-      const facilityRef = doc(db, "facilities", facilityId);
-      // bookings: {date1: {time1: [bookingId1, bookingId2], time2: [...],...},
-      //      date2: {time1: [bookingId3, bookingId4], ...}...}
-      const facilityDoc = await getDoc(facilityRef);
-      if (facilityDoc.exists()) {
-        const facilityBookings = await facilityDoc.data().bookings;
-        facilityBookings[date][time] = facilityBookings[date][time].filter(
-          (num) => num != facilityNumber
-        );
-        console.log("test");
-        updateDoc(facilityRef, {
-          bookings: facilityBookings,
-        });
-      } else {
-        console.log("No such facility! Possibly deleted by user.");
-      }
-      await deleteDoc(bookingRef);
-      Msg("", "Booking cancelled successfully!");
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   return (
@@ -118,7 +76,6 @@ export default function FacilityButton({ facilityId, facilityName }) {
               facility={facilityName}
               facilityNumber={booking.facilityNumber}
               userEmail={booking.userEmail}
-              onCancel={handleCancelBooking}
             />
           ))}
         </View>

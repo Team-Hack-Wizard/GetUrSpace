@@ -38,6 +38,11 @@ export default function PrevBookingItem({
   };
 
   return (
+    <View>
+      <Text>NOT USED</Text>
+    </View>
+  )
+  return (
     <View style={styles.box}>
       <View style={styles.iconContainer}>{renderIcon(facility)}</View>
       <Text style={styles.header}>{facility}</Text>

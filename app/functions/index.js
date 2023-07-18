@@ -1,3 +1,4 @@
 import Msg from "./Msg";
+import renderIcon from "./renderIcon";
 
-export { Msg };
+export { Msg, renderIcon };

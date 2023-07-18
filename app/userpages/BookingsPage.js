@@ -23,11 +23,13 @@ import {
 import BookingItem from "../components/BookingItem";
 import { auth, db } from "../config/firebase";
 import { AntDesign } from "@expo/vector-icons";
+import moment from "moment-timezone";
 
 export default function BookingsPage({ navigation }) {
   // bookings in this format:
   // [{ id: '1', facility: 'MPH', venue: 'PGPR', date: '8 July', time: '11.30'}, ... ]
-  const [bookings, setBookings] = useState([]);
+  const [curBookings, setCurBookings] = useState([]);
+  const [prevBookings, setPrevBookings] = useState([]);
 
   const handleCancelBooking = async (
     bookingId,
@@ -79,42 +81,41 @@ export default function BookingsPage({ navigation }) {
       orderBy("time"),
       orderBy("facilityName")
     );
-    const moment = require("moment-timezone");
-    const sgTime = moment().tz("Asia/Singapore").format();
+    //const moment = require("moment-timezone");
+    const sgTime = moment().tz("Asia/Singapore");
     const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-      let bookings = [];
+      let curBookings = [];
+      let pastBookings = [];
 
       // for each booking that has matching userId, add to bookings array with relevent info
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const dateTime = Date.parse(data.date + "T" + parseTime(data.time));
-        // if booking is in the past, delete it from database
-        if (dateTime < sgTime) {
-          console.log("deleting booking: " + doc.id);
-          try {
-            deleteDoc(doc.ref);
-          } catch (e) {
-            console.log(e);
-          }
+        const dateTime = moment(data.date, "YYYY-MM-DD").hour(data.time);
+        const booking = {
+          id: doc.id, // booking id
+          facility: data.facilityName,
+          facilityId: data.facilityId,
+          facilityNumber: data.facilityNumber,
+          venue: data.groupName,
+          date: data.date,
+          time: data.time,
+        };
+
+        // if booking is in the past, move it to the prevBookings page
+        if (dateTime.isBefore(sgTime)) {
+          pastBookings.push(booking)
         } else {
-          bookings.push({
-            id: doc.id, // booking id
-            facility: data.facilityName,
-            facilityId: data.facilityId,
-            facilityNumber: data.facilityNumber,
-            venue: data.groupName,
-            date: data.date,
-            time: data.time,
-          });
+          curBookings.push(booking);
         }
       });
-      setBookings(bookings);
+      setCurBookings(curBookings);
+      setPrevBookings(pastBookings);
     });
     return unsubscribe;
   }, []);
 
-  const handlePress = () => {
-    navigation.navigate("Previous Bookings");
+  const handlePressPastBooking = () => {
+    navigation.navigate("Previous Bookings", { prevBookings: prevBookings });
   };
 
   return (
@@ -124,11 +125,11 @@ export default function BookingsPage({ navigation }) {
           <View style={styles.header}>
             <Text style={styles.main}>Bookings</Text>
           </View>
-          <TouchableOpacity onPress={handlePress}>
+          <TouchableOpacity onPress={handlePressPastBooking}>
             <AntDesign name="calendar" size={30} color="black" />
           </TouchableOpacity>
         </View>
-        {bookings.map((booking) => (
+        {curBookings.map((booking) => (
           <BookingItem
             key={booking.id}
             id={booking.id}

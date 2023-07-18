@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import TextBox from "../components/TextBox";
 import { useFocusEffect } from "@react-navigation/native";
 import { auth, db } from "../config/firebase";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { addDoc, doc, onSnapshot } from "firebase/firestore";
 import { useEffect } from "react";
 import {
   Ionicons,
@@ -22,6 +22,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { sendPasswordResetEmail } from "firebase/auth";
+import { Msg } from "../functions";
 
 export default function ProfilePage({ navigation, route }) {
   const [name, setName] = useState("");
@@ -124,12 +125,18 @@ export default function ProfilePage({ navigation, route }) {
 
   // Contact Us form implementation is to be determined later
   // might change to birnging user to email app with address filled in
-  const submitForm = () => {
+  const submitForm = async () => {
     console.log("Form Data:", formData);
+    const docRef = await addDoc(collection(db, "enquiry"), {
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+      userId: auth.currentUser.uid,
+    })
     setFormData({ name: "", email: "", message: "" });
     setShowContactForm(false);
     setModalVisible(false);
-    Alert.alert(
+    Msg(
       "Successful!",
       "Thanks. We will get in touch with you as soon as possible."
     );

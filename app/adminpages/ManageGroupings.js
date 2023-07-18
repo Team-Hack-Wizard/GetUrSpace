@@ -363,7 +363,11 @@ export default function ManageGroupings({ navigation, route }) {
 
       <View>
         <Text style={styles.text}>Remove Users</Text>
-        <TextInput style={styles.input} selectionColor="#094074" />
+        <TextInput
+          style={styles.input}
+          selectionColor="#094074"
+          onChangeText={(text) => setRemoveUser(text)}
+        />
       </View>
 
       <View>

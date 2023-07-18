@@ -11,7 +11,6 @@ import {
   Alert,
   KeyboardAvoidingView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { auth } from "../config/firebase";
 import { Feather } from '@expo/vector-icons';
 
@@ -56,26 +55,26 @@ export default function LoginPage({ navigation }) {
     }
   };
 
-  const login = () => {
-    const strongRegex = new RegExp("^[a-zA-Z0-9_.+-]+@u.nus.edu");
+  // const login = () => {
+  //   const strongRegex = new RegExp("^[a-zA-Z0-9_.+-]+@u.nus.edu");
 
-    if (!strongRegex.test(email)) {
-      showMessage(MESSAGE.email);
-      return false;
-    }
+  //   if (!strongRegex.test(email)) {
+  //     showMessage(MESSAGE.email);
+  //     return false;
+  //   }
 
-    if (!email || !password) {
-      showMessage({
-        message: "Invalid email or password entered. Try again.",
-      });
-      return false;
-    }
+  //   if (!email || !password) {
+  //     showMessage({
+  //       message: "Invalid email or password entered. Try again.",
+  //     });
+  //     return false;
+  //   }
 
-    if (password.length < 8) {
-      showMessage(MESSAGE.password);
-      return false;
-    }
-  };
+  //   if (password.length < 8) {
+  //     showMessage(MESSAGE.password);
+  //     return false;
+  //   }
+  // };
 
   const handleRegister = () => {
     navigation.navigate("Register");

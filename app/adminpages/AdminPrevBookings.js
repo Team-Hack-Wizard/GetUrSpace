@@ -3,27 +3,24 @@ import {
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
   FlatList,
   Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AntDesign } from "@expo/vector-icons";
 import Title from "../components/Title";
-import FacilityButton from "../components/FacilityButton";
+import PrevFacilityButton from "../components/PrevFacilityButton";
 import { auth, db } from "../config/firebase";
 import {
   doc,
   onSnapshot,
   getDoc,
-  getDocs,
   collection,
-  updateDoc,
 } from "firebase/firestore";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function AdminPrevBookings({ navigation }) {
+  const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [listData, setListData] = useState([]);
@@ -39,6 +36,7 @@ export default function AdminPrevBookings({ navigation }) {
     const unsubscribe = onSnapshot(userRef, async (userDoc) => {
       if (!loading) setLoading(true);
       const groups = await userDoc.get("groups");
+      setGroups(groups);
       // we want to pass in to listData: [{id: group1Id, name: groupName,
       //  data: [{id: 1, name: "facility1", number: x}, {id: 2, name: "facility2", number: x}, ...]}, ...]
       let curListData = await Promise.all(
@@ -88,20 +86,17 @@ export default function AdminPrevBookings({ navigation }) {
       </View>
 
       <FlatList
-        data={listData}
-        keyExtractor={(item) => item.id.toString()}
+        data={groups}
+        keyExtractor={(item) => item.groupId}
         renderItem={({ item }) => (
           <>
-            <Title data={item.name} />
-            {item.data.map((facility) => {
+            <Title data={item.groupName} />
+            {item.facilities.map((facility) => {
               return (
-                <FacilityButton
-                  key={facility.id}
-                  facilityId={facility.id}
-                  facilityName={facility.name}
-                  groupId={item.id}
-                  groupName={item.name}
-                  number={facility.number}
+                <PrevFacilityButton
+                  key={facility.facilityId}
+                  facilityId={facility.facilityId}
+                  facilityName={facility.facilityName}
                 />
               );
             })}

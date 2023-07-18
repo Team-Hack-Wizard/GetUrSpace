@@ -3,8 +3,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Alert,
-  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -107,6 +105,7 @@ export default function BookFacility({ navigation, route }) {
           groupName: groupName,
           facilityNumber: selectedNumber,
           userId: auth.currentUser.uid,
+          userEmail: auth.currentUser.email,
         });
 
         if (!newFacBooking[start.format("YYYY-MM-DD")]) {
