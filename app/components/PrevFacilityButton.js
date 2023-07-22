@@ -15,7 +15,7 @@ import { renderIcon } from "../functions";
 // facility button receives bookings array where each booking is an object of booking info
 // eg: [{facilityId: , facilityName: , groupId: , groupName: ,
 // bookings: [{date: , time: , facilityNumber: , userId: , bookingId: },...]}, ... ]
-export default function PrevFacilityButton({ facilityId, facilityName }) {
+export default function PrevFacilityButton({ facilityId, facilityName, searchQuery }) {
   const [expanded, setExpanded] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,18 +66,25 @@ export default function PrevFacilityButton({ facilityId, facilityName }) {
       </TouchableOpacity>
       {expanded && (
         <View style={styles.dropdown}>
-          {bookings.map((booking) => (
-            <BookingItem
-              key={booking.bookingId}
-              id={booking.bookingId}
-              date={booking.date}
-              time={booking.time}
-              facilityId={facilityId}
-              facility={facilityName}
-              facilityNumber={booking.facilityNumber}
-              userEmail={booking.userEmail}
-            />
-          ))}
+          <View style={styles.dropdownContent}>
+            {bookings
+              .filter((booking) => 
+                searchQuery === "" ||
+                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((booking) => (
+                <BookingItem
+                  key={booking.bookingId}
+                  id={booking.bookingId}
+                  date={booking.date}
+                  time={booking.time}
+                  facilityId={facilityId}
+                  facility={facilityName}
+                  facilityNumber={booking.facilityNumber}
+                  userEmail={booking.userEmail}
+                />
+              ))}
+          </View>
         </View>
       )}
     </View>
@@ -110,5 +117,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E5E5",
     marginTop: 5,
     padding: 10,
+  },
+
+  dropdownContent: {
+    alignItems: "center",
   },
 });

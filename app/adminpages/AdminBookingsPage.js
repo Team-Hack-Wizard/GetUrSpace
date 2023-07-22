@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
+import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import Title from "../components/Title";
@@ -21,6 +22,7 @@ import {
 export default function AdminBookingsPage({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]); 
+  const [searchQuery, setSearchQuery] = useState("");
   const handlePress = () => {
     navigation.navigate("Previous Bookings");
   };
@@ -37,6 +39,10 @@ export default function AdminBookingsPage({ navigation }) {
     }); 
     return unsubscribe;
   }, []);
+
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+  };
 
   const windowHeight = Dimensions.get("window").height;
 
@@ -64,21 +70,29 @@ export default function AdminBookingsPage({ navigation }) {
         </TouchableOpacity>
       </View>
 
+      <SearchBar
+        onChangeText={handleSearch}
+        value={searchQuery}
+        placeholder="Search"
+        autoCorrect={false}
+        lightTheme
+        round
+      />
+
       <FlatList
         data={groups}
         keyExtractor={(item) => item.groupId}
         renderItem={({ item }) => (
           <>
             <Title data={item.groupName} />
-            {item.facilities.map((facility) => {
-              return (
-                <FacilityButton
-                  key={facility.facilityId}
-                  facilityId={facility.facilityId}
-                  facilityName={facility.facilityName}
-                />
-              );
-            })}
+            {item.facilities.map((facility) => (
+              <FacilityButton
+                key={facility.facilityId}
+                facilityId={facility.facilityId}
+                facilityName={facility.facilityName}
+                searchQuery={searchQuery}
+              />
+            ))}
           </>
         )}
         nestedScrollEnabled
