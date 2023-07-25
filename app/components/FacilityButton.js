@@ -112,7 +112,10 @@ export default function FacilityButton({ facilityId, facilityName, searchQuery }
             {bookings
               .filter((booking) =>
                 searchQuery === "" ||
-                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
+                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                booking.date == (searchQuery) ||
+                booking.time == (searchQuery) ||
+                booking.facilityNumber == (searchQuery)
               )
               .map((booking) => (
                 <BookingItem

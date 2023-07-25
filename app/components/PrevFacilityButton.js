@@ -69,8 +69,11 @@ export default function PrevFacilityButton({ facilityId, facilityName, searchQue
           <View style={styles.dropdownContent}>
             {bookings
               .filter((booking) => 
-                searchQuery === "" ||
-                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
+                searchQuery === "" || 
+                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                booking.date == (searchQuery) ||
+                booking.time == (searchQuery) ||
+                booking.facilityNumber == (searchQuery)
               )
               .map((booking) => (
                 <BookingItem
