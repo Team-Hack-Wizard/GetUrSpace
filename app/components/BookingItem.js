@@ -37,12 +37,12 @@ export default function BookingItem({
       <View style={styles.innerBox}>
         <View style={styles.smallBox}>
           {venue && <Text style={styles.body}>Venue: {venue}</Text>}
-          <Text style={styles.body}>Facility Number: {facilityNumber}</Text>
-          <Text style={styles.body}>Date: {date}</Text>
-          <Text style={styles.body}>Time: {parseTime(time)}</Text>
           {userEmail && (
             <Text style={styles.body}>User Email: {userEmail}</Text>
           )}
+          <Text style={styles.body}>Facility Number: {facilityNumber}</Text>
+          <Text style={styles.body}>Date: {date}</Text>
+          <Text style={styles.body}>Time: {parseTime(time)}</Text>
         </View>
         {onCancel && (
           <TouchableOpacity
@@ -59,21 +59,21 @@ export default function BookingItem({
 
 const styles = StyleSheet.create({
   box: {
-    backgroundColor: "#EBEBEB",
+    backgroundColor: "#B1DDF1",
     width: "90%",
-    marginBottom: 30,
+    marginVertical: 15,
+    alignSelf: "center",
   },
 
   iconContainer: {
     position: "absolute",
-    top: 50,
-    left: 15,
+    top: 55,
+    left: 20,
   },
 
   header: {
     fontSize: 18,
     marginTop: 10,
-    marginBottom: 5,
     marginLeft: 85,
   },
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    top: 0,
+    top: 15,
     right: 15,
   },
 

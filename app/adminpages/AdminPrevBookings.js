@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { SearchBar } from "react-native-elements";
 import Title from "../components/Title";
 import PrevFacilityButton from "../components/PrevFacilityButton";
 import { auth, db } from "../config/firebase";
@@ -22,6 +23,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 export default function AdminPrevBookings({ navigation }) {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const [bookings, setBookings] = useState([]);
   const [listData, setListData] = useState([]);
   const handleReturn = () => {
@@ -74,6 +76,10 @@ export default function AdminPrevBookings({ navigation }) {
     };
   }, []);
 
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+  };
+
   const windowHeight = Dimensions.get("window").height;
 
   return (
@@ -84,6 +90,15 @@ export default function AdminPrevBookings({ navigation }) {
         </TouchableOpacity>
         <Text style={styles.main}>Past Bookings</Text>
       </View>
+
+      <SearchBar
+        onChangeText={handleSearch}
+        value={searchQuery}
+        placeholder="Search"
+        autoCorrect={false}
+        lightTheme
+        round
+      />
 
       <FlatList
         data={groups}
@@ -97,6 +112,7 @@ export default function AdminPrevBookings({ navigation }) {
                   key={facility.facilityId}
                   facilityId={facility.facilityId}
                   facilityName={facility.facilityName}
+                  searchQuery={searchQuery}
                 />
               );
             })}
