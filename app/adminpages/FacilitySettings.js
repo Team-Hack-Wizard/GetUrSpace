@@ -14,9 +14,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import TimeDropDown from "../components/TimeDropDown";
 import { db } from "../config/firebase";
 import {
+  collection,
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   query,
   updateDoc,
   where,
@@ -36,8 +38,42 @@ export default function FacilitySettings({ navigation, route }) {
   const [initialName, setInitialName] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // // to update, if changes are made
+  // useEffect(() => {
+  //   const unsub = onSnapshot(
+  //     doc(db, "facilities", facilityId),
+  //     (facilityDoc) => {
+  //       if (!loading) setLoading(true);
+  //       if (facilityDoc.maxHoursPerWeek)
+  //         setMaxHours(facilityDoc.maxHoursPerWeek);
+  //       if (facilityDoc.maxPerHour) setMaxPerHour(facilityDoc.maxPerHour);
+  //       if (facilityDoc.inAdvanceDays)
+  //         setBookInAdvance(facilityDoc.inAdvanceDays);
+  //       if (facilityDoc.number) setNumberOfFacilities(facilityDoc.number);
+  //       if (facilityDoc.startTime) {
+  //         const time = facilityDoc.startTime;
+  //         setFirstBookingSlot(time < 10 ? `0${time}:00` : `${time}:00`);
+  //       }
+  //       if (facilityDoc.endTime) {
+  //         const time = facilityDoc.endTime;
+  //         setLastBookingSlot(time < 10 ? `0${time}:00` : `${time}:00`);
+  //       }
+  //       if (facilityDoc.name) {
+  //         setInitialName(facilityDoc.name);
+  //         setRenameFacility(facilityDoc.name);
+  //       }
+  //       if (facilityDoc.location) setLocationText(facilityDoc.location);
+  //       if (loading) setLoading(false);
+  //     }
+  //   );
+  //   return unsub;
+  // }, []);
+
+  // for first render, get the facility info from the facility doc
   useEffect(() => {
+    if (!loading) setLoading(true);
     async function getFacilityInfo() {
+      if (!loading) setLoading(true);
       const facilityDoc = (
         await getDoc(doc(db, "facilities", facilityId))
       ).data();
@@ -59,7 +95,7 @@ export default function FacilitySettings({ navigation, route }) {
         setRenameFacility(facilityDoc.name);
       }
       if (facilityDoc.location) setLocationText(facilityDoc.location);
-      setLoading(false);
+      if (loading) setLoading(false);
     }
     getFacilityInfo();
   }, []);
@@ -90,10 +126,11 @@ export default function FacilitySettings({ navigation, route }) {
       // Save the changes to the facility doc
       const facilityRef = doc(db, "facilities", facilityId);
       // Below info are rendered initially to show the current settings
+
       updateDoc(facilityRef, {
         maxHoursPerWeek: maxHours,
         maxPerHour: maxPerHour,
-        InAdvanceDays: bookInAdvance,
+        inAdvanceDays: bookInAdvance,
         number: numberOfFacilities,
         startTime: Number(firstBookingSlot.slice(0, 2)),
         endTime: Number(lastBookingSlot.slice(0, 2)),
@@ -118,8 +155,11 @@ export default function FacilitySettings({ navigation, route }) {
                 groups.map(async (group) => {
                   // only ammend the group we are in, so that we can find the correct facility
                   if (group.groupId === groupId) {
-                    group.facilities = await Promise.all(
-                      group.facilities.map(async (facility) => {
+                    const newFacilities = group.facilities;
+                    // ammend the object in facilities directly
+                    // newFacilities should be a pointer to the original array
+                    await Promise.all(
+                      newFacilities.map((facility) => {
                         if (facility.facilityId === facilityId) {
                           facility.facilityName = renameFacility;
                         }
@@ -139,14 +179,14 @@ export default function FacilitySettings({ navigation, route }) {
           where("facilityId", "==", facilityId)
         );
         const bookingDocs = await getDocs(bookingQueries);
-        await Promise.all(
-          bookingDocs.map(async (bookingDoc) => {
-            updateDoc(doc(db, "bookings", bookingDoc.id), {
-              facilityName: renameFacility,
-            });
-          })
-        );
+        bookingDocs.forEach(async (bookingDoc) => {
+          updateDoc(doc(db, "bookings", bookingDoc.id), {
+            facilityName: renameFacility,
+          });
+        });
       }
+      
+      Msg("Success", "Changes saved successfully.");
     } catch (error) {
       console.log(error);
       Msg(

@@ -25,7 +25,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { Msg } from "../functions";
-import moment from 'moment';
+import moment from "moment";
 
 const TIMEINTERVAL = 1; // in hours
 
@@ -248,9 +248,9 @@ export default function TimePage({ navigation, route }) {
       setAvailable(
         newAvailable.map((arr) => arr.filter((time) => time !== -1))
       );
-      setLoading(false);
     }
     getFacility();
+    setLoading(false);
   }, [bookings]);
 
   if (loading === true) {

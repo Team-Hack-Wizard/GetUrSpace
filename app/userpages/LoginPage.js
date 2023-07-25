@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { auth } from "../config/firebase";
 import { Feather } from '@expo/vector-icons';
+import Msg from "../functions/Msg";
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState("");
@@ -23,58 +24,22 @@ export default function LoginPage({ navigation }) {
     setSecurePassword(!securePassword);
   }
 
-  const errMsg = (msg) =>
-    Alert.alert(
-      "Unverified Account",
-      msg,
-      [
-        {
-          text: "Cancel",
-          //onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK" },
-      ],
-      { cancelable: false }
-    );
-
   const handleLogin = () => {
     if (email === "" || password === "") {
-      errMsg("Please ensure no fields are empty!");
+      Msg("Please ensure no fields are empty!");
     } else {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           if (!userCredential.user.emailVerified) {
-            errMsg("Please verify your email before logging in!");
+            Msg("", "Please verify your email before logging in!");
             auth.signOut();
           }
         })
         .catch((error) => {
-          errMsg(error.message);
+          Msg("", error.message);
         });
     }
   };
-
-  // const login = () => {
-  //   const strongRegex = new RegExp("^[a-zA-Z0-9_.+-]+@u.nus.edu");
-
-  //   if (!strongRegex.test(email)) {
-  //     showMessage(MESSAGE.email);
-  //     return false;
-  //   }
-
-  //   if (!email || !password) {
-  //     showMessage({
-  //       message: "Invalid email or password entered. Try again.",
-  //     });
-  //     return false;
-  //   }
-
-  //   if (password.length < 8) {
-  //     showMessage(MESSAGE.password);
-  //     return false;
-  //   }
-  // };
 
   const handleRegister = () => {
     navigation.navigate("Register");

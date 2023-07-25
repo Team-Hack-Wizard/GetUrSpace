@@ -1,0 +1,36 @@
+appId: <app>
+---
+- tapOn: "Bookings"
+- assertVisible: "Venue: NUS"
+- assertVisible: "Facility Number: 2"
+- assertVisible: "Cancel"
+- assertVisible: "Date: 2023-07-24"
+- assertVisible: "Time: 17:00"
+# attempting to book for past bookings, should only be done once
+# since past bookings cannot be deleted from the app.
+# - tapOn: "Facilities"
+# - tapOn: "MPSH"
+# - tapOn: "Proceed"
+# - tapOn: "23"
+# - tapOn: "Continue"
+# - tapOn:
+#     text: "14:00"
+#     index: 1
+# - tapOn: "Book Now"
+# - tapOn: "OK"
+# - tapOn: "Bookings"
+- tapOn: ""
+- tapOn: "Past Bookings"
+- assertVisible: "Venue: NUS"
+- assertVisible: "Facility Number: 2"
+- tapOn: ""
+- tapOn: "Cancel"
+- assertVisible: "Are you sure you want to cancel this booking?"
+- tapOn: "CANCEL"
+- assertVisible: "Venue: NUS"
+- assertVisible: "Facility Number: 2"
+- tapOn: "Cancel"
+- tapOn: "OK"
+- tapOn: "Facilities"
+- tapOn: "Profile"
+- tapOn: "Log Out"

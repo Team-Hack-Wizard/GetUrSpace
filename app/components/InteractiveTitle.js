@@ -12,8 +12,8 @@ export default function InteractiveTitle({ navigation, data }) {
 
   return (
     <View style={styles.box}>
-      <Text style={styles.text}>{data.groupName}</Text>
-      <TouchableOpacity onPress={handlePress} style={styles.iconContainer}>
+      <Text testID="title" style={styles.text}>{data && data.groupName? data.groupName: ""}</Text>
+      <TouchableOpacity testID="icon" onPress={handlePress} style={styles.iconContainer}>
         <AntDesign name="infocirlceo" size={24} color="white" />
       </TouchableOpacity>
     </View>

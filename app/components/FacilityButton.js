@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import Msg from "../functions/Msg";
-import moment from "moment";
+import moment from "moment-timezone";
 
 // facility button receives bookings array where each booking is an object of booking info
 // eg: [{facilityId: , facilityName: , groupId: , groupName: ,

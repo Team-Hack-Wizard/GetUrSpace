@@ -1,0 +1,325 @@
+appId: <app>
+---
+
+## Order:
+# Users
+# registrationTest
+- assertVisible: "Log in"
+- tapOn: "Register"
+- assertVisible:
+    text: "Register"
+    index: 0
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "tester@gmail.com"
+- assertVisible: "tester@gmail.com"
+- tapOn: "Enter your name"
+- inputText: "Tester0"
+- assertVisible: "Tester0"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- assertVisible: "••••••••"
+- tapOn:
+    text: ""
+    index: 0
+- assertVisible:
+    text: "Password"
+    index: 0
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Please ensure no fields are empty!"
+- tapOn: "OK"
+- tapOn: "Confirm your password"
+- inputText: "Password1"
+- tapOn: ""
+- assertVisible:
+    text: "Password1"
+    index: 0
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Please register with a valid NUS email!"
+- tapOn: "OK"
+- tapOn:
+    point: "80%, 26%"
+- "eraseText"
+- inputText: "e0934116@u.nus.edu"
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Passwords do not match!"
+- tapOn: "OK"
+- tapOn:
+    point: "70%,44%"
+- eraseText: 0
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Verification email has been sent, please verify your email before\
+    \ logging in!"
+- tapOn: "OK"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "wrongpassword"
+- tapOn: ""
+- assertVisible:
+    text: "wrongpassword"
+    index: 0
+- tapOn: "Login"
+- assertVisible: "Firebase: Error (auth/wrong-password)."
+- tapOn: "OK"
+- tapOn:
+    point: "70%,34%"
+- "eraseText"
+- inputText: "Password"
+- tapOn: "Login"
+- assertVisible: "Please verify your email before logging in!"
+- tapOn: "OK"
+- tapOn: "Register"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your name"
+- inputText: "Tester0"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Confirm your password"
+- inputText: "Password"
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Firebase: Error (auth/email-already-in-use)."
+- tapOn: "OK"
+- tapOn: "Login"
+- assertVisible: "Log in"
+
+# loginTest
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Login"
+- assertVisible:
+    text: "Facilities"
+    index: 0
+- assertVisible: "NUS"
+- assertVisible: "Gym"
+- assertVisible: "Study Room"
+- assertVisible: "Meeting Room"
+- assertVisible: "MPSH"
+- tapOn: "Bookings"
+- tapOn: "Profile"
+- assertVisible:
+    text: "Profile"
+    index: 0
+- assertVisible: "e0934116@u.nus.edu"
+- assertVisible: "NUS"
+- assertVisible: "user"
+- assertVisible:
+    text: "Profile"
+    index: 0
+- tapOn: "Facilities"
+- assertVisible:
+    text: "Facilities"
+    index: 0
+
+# bookFacilityTest
+- tapOn: "MPSH"
+- tapOn: "Facility Info"
+- assertVisible: "Location: "
+- assertVisible: "Maximum hours per week"
+- assertVisible: "Number of facilities"
+- assertVisible: "First Booking Slot Timing"
+- assertVisible: "Last Booking Slot Timing"
+- tapOn: "Proceed"
+- assertVisible: "Select Date"
+- tapOn:
+    text: "26"
+    index: 1
+- tapOn: "Continue"
+- assertVisible: "Select Time"
+- tapOn: ""
+- assertVisible: "Select Date"
+- tapOn: ""
+- assertVisible:
+    text: "Facilities"
+    index: 0
+- tapOn: "MPSH"
+- tapOn: "Proceed"
+- tapOn:
+    text: "1"
+    index: 0
+- tapOn: "Continue"
+- tapOn: "24"
+- tapOn: "Continue"
+- tapOn:
+    text: "17:00"
+    index: 1
+- tapOn: "Book Now"
+- assertVisible: "Your booking is successful! You can view it at the bookings page."
+- tapOn: "OK"
+- assertVisible:
+    text: "Facilities"
+    index: 0
+- tapOn: "MPSH"
+- tapOn: "Proceed"
+- tapOn: "24"
+- tapOn: "Continue"
+- tapOn: "17:00"
+- tapOn: "Book Now"
+- assertVisible: "You have reached the maximum number of bookings for this facility\
+    \ per hour (1). Please try to book for another timing!"
+- tapOn: "OK"
+- tapOn:
+    text: "18:00"
+    index: 1
+- tapOn: "Book Now"
+- assertVisible: "Your booking is successful! You can view it at the bookings page."
+- tapOn: "OK"
+- tapOn: "MPSH"
+- tapOn: "Proceed"
+- tapOn: "24"
+- tapOn: "Continue"
+- tapOn: "You have reached the maximum number of hours per week (2 hours) for this\
+    \ facility. Please select another facility or date, or cancel the existing bookings\
+    \ in that week."
+- tapOn: "OK"
+- tapOn: "Bookings"
+- tapOn:
+    text: "Cancel"
+    index: 1
+- tapOn: "OK"
+- tapOn: "Facilities"
+
+# viewBookingsTest
+- tapOn: "Bookings"
+- assertVisible: "Venue: NUS"
+- assertVisible: "Facility Number: 2"
+- assertVisible: "Cancel"
+- assertVisible: "Date: 2023-07-24"
+- assertVisible: "Time: 17:00"
+# attempting to book for past bookings, should only be done once
+# since past bookings cannot be deleted from the app.
+# - tapOn: "Facilities"
+# - tapOn: "MPSH"
+# - tapOn: "Proceed"
+# - tapOn: "23"
+# - tapOn: "Continue"
+# - tapOn:
+#     text: "14:00"
+#     index: 1
+# - tapOn: "Book Now"
+# - tapOn: "OK"
+# - tapOn: "Bookings"
+- tapOn: ""
+- tapOn: "Past Bookings"
+- assertVisible: "Venue: NUS"
+- assertVisible: "Facility Number: 2"
+- tapOn: ""
+- tapOn: "Cancel"
+- assertVisible: "Are you sure you want to cancel this booking?"
+- tapOn: "CANCEL"
+- assertVisible: "Venue: NUS"
+- assertVisible: "Facility Number: 2"
+- tapOn: "Cancel"
+- tapOn: "OK"
+- tapOn: "Facilities"
+- tapOn: "Profile"
+- tapOn: "Log Out"
+
+## Admin:
+# manageGroupsTest
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "hcm@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "qwerqwer"
+- tapOn: "Login"
+- assertVisible:
+    text: "Facilities"
+    index: 0
+- tapOn: "Profile"
+- assertVisible: "admin"
+- tapOn: "Facilities"
+- tapOn:
+    text: ""
+    index: 1
+- tapOn: "Add by nus email"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Back"
+- tapOn: "Submit"
+- assertVisible: "Are you sure you want to make these changes? Some of the changes\
+    \ may be irreversible."
+- tapOn: "OK"
+- assertVisible: "User added to group successfully"
+- tapOn: "OK"
+- tapOn:
+    text: "Enter New Group Name"
+    index: 0
+- inputText: "PGP"
+- tapOn:
+    text: "Enter New Group Name"
+    index: 1
+- inputText: "test"
+- tapOn: "Back"
+- tapOn: "Submit"
+- tapOn: "OK"
+- tapOn: "OK"
+- tapOn: "Facilities"
+- assertVisible: "PGP"
+- assertVisible: "test"
+- tapOn: "Profile"
+- assertVisible: "NUS, PGP"
+- tapOn: "Log Out"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Login"
+- assertVisible: "PGP"
+- assertVisible: "MPH"
+- assertVisible: "test"
+- assertVisible:
+    text: "Gym"
+    index: 1
+- tapOn: "Profile"
+- assertVisible: "NUS, PGP"
+- tapOn: "Log Out"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "hcm@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "qwerqwer"
+- tapOn: "Login"
+- tapOn:
+    text: ""
+    index: 1
+- tapOn: "Remove by nus email"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter New Group Name"
+- inputText: "PGPR"
+- tapOn: "Enter Name of Facility to Remove"
+- inputText: "test"
+- tapOn: "Back"
+- tapOn: "Submit"
+- tapOn: "OK"
+- tapOn: "OK"
+- tapOn: ""
+- tapOn: "Profile"
+- tapOn: "Log Out"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Login"
+- tapOn: "Profile"
+- assertVisible: "NUS"
+- tapOn: "Log Out"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "hcm@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "qwerqwer"
+- tapOn: "Login"
+
+# manageFacilityTest
+
+
+# 

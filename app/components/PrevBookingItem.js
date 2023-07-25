@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { renderIcon } from "../functions";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 
 export default function PrevBookingItem({
@@ -17,31 +18,11 @@ export default function PrevBookingItem({
     return timeString;
   };
 
-  //dynamic rendering of icons depending on which facility is being booked
-  const renderIcon = (facility) => {
-    switch (facility) {
-      case "MPH":
-        return <Ionicons name="basketball-sharp" size={50} color="black" />;
-      case "MPSH":
-        return <Ionicons name="basketball-sharp" size={50} color="black" />;
-      case "Meeting Room":
-        return <MaterialIcons name="meeting-room" size={50} color="black" />;
-      case "Study Room":
-        return <FontAwesome5 name="door-closed" size={50} color="black" />;
-      case "Gym":
-        return <FontAwesome5 name="dumbbell" size={50} color="black" />;
-      case "BBQ Pit":
-        return <MaterialIcons name="outdoor-grill" size={50} color="black" />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <View>
       <Text>NOT USED</Text>
     </View>
-  )
+  );
   return (
     <View style={styles.box}>
       <View style={styles.iconContainer}>{renderIcon(facility)}</View>

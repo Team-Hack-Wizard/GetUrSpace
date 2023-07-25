@@ -4,11 +4,6 @@ import { getFirestore } from 'firebase/firestore';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Optionally import the services that you want to use
-// import {...} from "firebase/auth";
-// import {...} from "firebase/functions";
-// import {...} from "firebase/storage";
-
 // Initialize Firebase
 // may be do if else statement to give different info based on ios or android
 // or separate the files and pass in to app.js differently or something

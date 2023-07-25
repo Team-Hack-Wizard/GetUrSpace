@@ -18,3 +18,6 @@ web-build/
 
 # API keys
 .env
+
+# jest coverage report
+/coverage/*

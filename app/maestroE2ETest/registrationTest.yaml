@@ -1,0 +1,90 @@
+appId: <app>
+---
+- assertVisible: "Log in"
+- tapOn: "Register"
+- assertVisible:
+    text: "Register"
+    index: 0
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "tester@gmail.com"
+- assertVisible: "tester@gmail.com"
+- tapOn: "Enter your name"
+- inputText: "Tester0"
+- assertVisible: "Tester0"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- assertVisible: "••••••••"
+- tapOn:
+    text: ""
+    index: 0
+- assertVisible:
+    text: "Password"
+    index: 0
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Please ensure no fields are empty!"
+- tapOn: "OK"
+- tapOn: "Confirm your password"
+- inputText: "Password1"
+- tapOn: ""
+- assertVisible:
+    text: "Password1"
+    index: 0
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Please register with a valid NUS email!"
+- tapOn: "OK"
+- tapOn:
+    point: "80%, 26%"
+- "eraseText"
+- inputText: "e0934116@u.nus.edu"
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Passwords do not match!"
+- tapOn: "OK"
+- tapOn:
+    point: "70%,44%"
+- eraseText: 0
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Verification email has been sent, please verify your email before\
+    \ logging in!"
+- tapOn: "OK"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "wrongpassword"
+- tapOn: ""
+- assertVisible:
+    text: "wrongpassword"
+    index: 0
+- tapOn: "Login"
+- assertVisible: "Firebase: Error (auth/wrong-password)."
+- tapOn: "OK"
+- tapOn:
+    point: "70%,34%"
+- "eraseText"
+- inputText: "Password"
+- tapOn: "Login"
+- assertVisible: "Please verify your email before logging in!"
+- tapOn: "OK"
+- tapOn: "Register"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your name"
+- inputText: "Tester0"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Confirm your password"
+- inputText: "Password"
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Firebase: Error (auth/email-already-in-use)."
+- tapOn: "OK"
+- tapOn: "Login"
+- assertVisible: "Log in"
