@@ -30,7 +30,7 @@ export default function AdminFacItem({
 
 const styles = StyleSheet.create({
   facilityItem: {
-    backgroundColor: "#EBEBEB",
+    backgroundColor: "#E5E5E5",
     width: "95%",
     height: 50,
     marginVertical: 5,

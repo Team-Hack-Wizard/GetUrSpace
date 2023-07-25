@@ -1,7 +1,7 @@
 import {
   StyleSheet,
   Text,
-  ScrollView,
+  FlatList,
   View,
   TouchableOpacity,
 } from "react-native";
@@ -20,28 +20,35 @@ export default function PrevBookings({ navigation, route }) {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.box}>
-          <TouchableOpacity onPress={handleReturn}>
-            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.main}>Past Bookings</Text>
-        </View>
-        {prevBookings.map((booking) => (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.box}>
+        <TouchableOpacity onPress={handleReturn}>
+          <MaterialIcons name="arrow-back-ios" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.main}>Past Bookings</Text>
+      </View>
+
+      <FlatList
+        data={prevBookings}
+        keyExtractor={( item ) => item.id}
+        renderItem={({ item }) => (
           <BookingItem
-            key={booking.id}
-            id={booking.id}
-            facility={booking.facility}
-            facilityId={booking.facilityId}
-            facilityNumber={booking.facilityNumber}
-            venue={booking.venue}
-            date={booking.date}
-            time={booking.time}
+            key={item.id}
+            id={item.id}
+            facility={item.facility}
+            facilityId={item.facilityId}
+            facilityNumber={item.facilityNumber}
+            venue={item.venue}
+            date={item.date}
+            time={item.time}
           />
-        ))}
-      </SafeAreaView>
-    </ScrollView>
+        )}
+        ListEmptyComponent={() => (
+          <Text style={styles.emptyText}>No past bookings!</Text>
+        )}
+        nestedScrollEnabled
+      />
+    </SafeAreaView>
   );
 }
 
@@ -49,7 +56,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
   },
 
   box: {
@@ -57,10 +63,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: "center",
     flexDirection: "row",
+    marginLeft: 30,
   },
 
   main: {
     fontSize: 30,
     marginHorizontal: 60,
+  },
+
+  emptyText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 20,
+    color: "#094174",
   },
 });

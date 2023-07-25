@@ -2,8 +2,8 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -119,31 +119,38 @@ export default function BookingsPage({ navigation }) {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.box}>
-          <View style={styles.header}>
-            <Text style={styles.main}>Bookings</Text>
-          </View>
-          <TouchableOpacity onPress={handlePressPastBooking}>
-            <AntDesign name="calendar" size={30} color="black" />
-          </TouchableOpacity>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.box}>
+        <View style={styles.header}>
+          <Text style={styles.main}>Bookings</Text>
         </View>
-        {curBookings.map((booking) => (
+        <TouchableOpacity onPress={handlePressPastBooking}>
+          <AntDesign name="calendar" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={curBookings}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
           <BookingItem
-            key={booking.id}
-            id={booking.id}
-            facility={booking.facility}
-            facilityId={booking.facilityId}
-            facilityNumber={booking.facilityNumber}
-            venue={booking.venue}
-            date={booking.date}
-            time={booking.time}
+            key={item.id}
+            id={item.id}
+            facility={item.facility}
+            facilityId={item.facilityId}
+            facilityNumber={item.facilityNumber}
+            venue={item.venue}
+            date={item.date}
+            time={item.time}
             onCancel={handleCancelBooking}
           />
-        ))}
-      </SafeAreaView>
-    </ScrollView>
+        )}
+        ListEmptyComponent={() => (
+          <Text style={styles.emptyText}>No current bookings!</Text>
+        )}
+        nestedScrollEnabled
+      />
+    </SafeAreaView>
   );
 }
 
@@ -151,7 +158,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
   },
 
   main: {
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    marginLeft: 120,
+    marginLeft: 118,
   },
 
   box: {
@@ -171,5 +177,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignSelf: "center",
     width: "90%",
+  },
+
+  emptyText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 20,
+    color: "#094174",
   },
 });

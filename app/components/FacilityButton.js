@@ -20,7 +20,7 @@ import moment from "moment";
 // facility button receives bookings array where each booking is an object of booking info
 // eg: [{facilityId: , facilityName: , groupId: , groupName: ,
 // bookings: [{date: , time: , facilityNumber: , userId: , bookingId: },...]}, ... ]
-export default function FacilityButton({ facilityId, facilityName }) {
+export default function FacilityButton({ facilityId, facilityName, searchQuery }) {
   const [expanded, setExpanded] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,19 +108,26 @@ export default function FacilityButton({ facilityId, facilityName }) {
       </TouchableOpacity>
       {expanded && (
         <View style={styles.dropdown}>
-          {bookings.map((booking) => (
-            <BookingItem
-              key={booking.bookingId}
-              id={booking.bookingId}
-              date={booking.date}
-              time={booking.time}
-              facilityId={facilityId}
-              facility={facilityName}
-              facilityNumber={booking.facilityNumber}
-              userEmail={booking.userEmail}
-              onCancel={handleCancelBooking}
-            />
-          ))}
+          <View style={styles.dropdownContent}>
+            {bookings
+              .filter((booking) =>
+                searchQuery === "" ||
+                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((booking) => (
+                <BookingItem
+                  key={booking.bookingId}
+                  id={booking.bookingId}
+                  date={booking.date}
+                  time={booking.time}
+                  facilityId={facilityId}
+                  facility={facilityName}
+                  facilityNumber={booking.facilityNumber}
+                  userEmail={booking.userEmail}
+                  onCancel={handleCancelBooking}
+                />
+              ))}
+          </View>
         </View>
       )}
     </View>
@@ -129,7 +136,7 @@ export default function FacilityButton({ facilityId, facilityName }) {
 
 const styles = StyleSheet.create({
   facilityBtn: {
-    backgroundColor: "#EBEBEB",
+    backgroundColor: "#E5E5E5",
     width: "95%",
     height: 50,
     marginVertical: 5,
@@ -153,5 +160,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E5E5",
     marginTop: 5,
     padding: 10,
+  },
+
+  dropdownContent: {
+    alignItems: "center",
   },
 });
