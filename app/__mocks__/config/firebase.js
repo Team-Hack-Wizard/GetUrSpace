@@ -1,9 +1,5 @@
-
-const firebase = jest.createMockFromModule("firebase");
-export const db = {
-
-};
-export const auth = {
-  
-};
+ 
+export const db = jest.fn();
+export const auth = jest.fn();
+export {db, auth};
 

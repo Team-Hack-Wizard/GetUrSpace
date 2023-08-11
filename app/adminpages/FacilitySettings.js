@@ -77,24 +77,24 @@ export default function FacilitySettings({ navigation, route }) {
       const facilityDoc = (
         await getDoc(doc(db, "facilities", facilityId))
       ).data();
-      if (facilityDoc.maxHoursPerWeek) setMaxHours(facilityDoc.maxHoursPerWeek);
-      if (facilityDoc.maxPerHour) setMaxPerHour(facilityDoc.maxPerHour);
-      if (facilityDoc.inAdvanceDays)
+      if (facilityDoc.maxHoursPerWeek != undefined) setMaxHours(facilityDoc.maxHoursPerWeek);
+      if (facilityDoc.maxPerHour != undefined) setMaxPerHour(facilityDoc.maxPerHour);
+      if (facilityDoc.inAdvanceDays != undefined)
         setBookInAdvance(facilityDoc.inAdvanceDays);
-      if (facilityDoc.number) setNumberOfFacilities(facilityDoc.number);
-      if (facilityDoc.startTime) {
+      if (facilityDoc.number != undefined) setNumberOfFacilities(facilityDoc.number);
+      if (facilityDoc.startTime != undefined) {
         const time = facilityDoc.startTime;
         setFirstBookingSlot(time < 10 ? `0${time}:00` : `${time}:00`);
       }
-      if (facilityDoc.endTime) {
+      if (facilityDoc.endTime != undefined) {
         const time = facilityDoc.endTime;
         setLastBookingSlot(time < 10 ? `0${time}:00` : `${time}:00`);
       }
-      if (facilityDoc.name) {
+      if (facilityDoc.name != undefined) {
         setInitialName(facilityDoc.name);
         setRenameFacility(facilityDoc.name);
       }
-      if (facilityDoc.location) setLocationText(facilityDoc.location);
+      if (facilityDoc.location != undefined) setLocationText(facilityDoc.location);
       if (loading) setLoading(false);
     }
     getFacilityInfo();
@@ -128,10 +128,10 @@ export default function FacilitySettings({ navigation, route }) {
       // Below info are rendered initially to show the current settings
 
       updateDoc(facilityRef, {
-        maxHoursPerWeek: maxHours,
-        maxPerHour: maxPerHour,
-        inAdvanceDays: bookInAdvance,
-        number: numberOfFacilities,
+        maxHoursPerWeek: Number(maxHours),
+        maxPerHour: Number(maxPerHour),
+        inAdvanceDays: Number(bookInAdvance),
+        number: Number(numberOfFacilities),
         startTime: Number(firstBookingSlot.slice(0, 2)),
         endTime: Number(lastBookingSlot.slice(0, 2)),
         name: renameFacility,

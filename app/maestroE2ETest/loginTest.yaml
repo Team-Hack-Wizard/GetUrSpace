@@ -1,9 +1,10 @@
 appId: <app>
 ---
-- tapOn: "Enter your UserID@u.nus.edu"
-- inputText: "e0934116@u.nus.edu"
-- tapOn: "Enter your password"
-- inputText: "Password"
+# - tapOn: "Enter your UserID@u.nus.edu"
+# - inputText: "e0934116@u.nus.edu"
+# - tapOn: "Enter your password"
+# - inputText: "Password"
+# above are already done in registration test
 - tapOn: "Login"
 - assertVisible:
     text: "Facilities"

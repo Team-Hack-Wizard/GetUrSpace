@@ -4,7 +4,9 @@ appId: <app>
 - assertVisible: "Venue: NUS"
 - assertVisible: "Facility Number: 2"
 - assertVisible: "Cancel"
-- assertVisible: "Date: 2023-07-24"
+# note that the booking dates and time needs to be changed according to the ones booked in
+# booking facility test
+- assertVisible: "Date: 2023-07-31"
 - assertVisible: "Time: 17:00"
 # attempting to book for past bookings, should only be done once
 # since past bookings cannot be deleted from the app.

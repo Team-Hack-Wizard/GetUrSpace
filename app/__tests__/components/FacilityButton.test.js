@@ -1,25 +1,40 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react-native";
 import FacilityButton from "../../components/FacilityButton";
 
 describe("FacilityButton component", () => {
-  //   // Tests that FacilityButton component renders a button with facility name and icon
-  //   it('test_render_facility_button', () => {
-  //       const { getByText } = render(<FacilityButton facilityId={1} facilityName='Test Facility' />);
-  //       expect(getByText('Test Facility')).toBeTruthy();
-  //       expect(getByText('Test Facility').parent.props.style[0].left).toBe(10);
-  //   });
-  //   // Tests that FacilityButton component expands to show bookings when button is clicked
-  //   it('test_expand_facility_button', () => {
-  //       const { getByText, queryByText } = render(<FacilityButton facilityId={1} facilityName='Test Facility' />);
-  //       fireEvent.press(getByText('Test Facility'));
-  //       expect(queryByText('Venue:')).toBeTruthy();
-  //   });
-  //   // Tests that FacilityButton component filters out past bookings
-  //   it('test_filter_past_bookings', () => {
-  //       const { queryByText } = render(<FacilityButton facilityId={1} facilityName='Test Facility' />);
-  //       expect(queryByText('Venue:')).toBeFalsy();
-  //   });
+  // Tests that FacilityButton component renders a button with facility name and icon
+  it("test_render_facility_button", () => {
+    const { getByText } = render(
+      <FacilityButton facilityId={1} facilityName="Test Facility" />
+    );
+    expect(getByText("Test Facility")).toBeTruthy();
+  });
+
+  // Tests that FacilityButton component expands to show bookings when button is clicked
+  it("test_expand_facility_button", async () => {
+    const { getByText, queryByText } = render(
+      <FacilityButton
+        facilityId={1}
+        facilityName="Test Facility"
+        searchQuery={""}
+      />
+    );
+
+    fireEvent.press(screen.getByText("Test Facility"));
+    //expect(await waitFor(() => getByText("Date:"))).toBeTruthy();
+    const booking = await waitFor(() => screen.getByText("Date: 2023-7-20"));
+    expect(booking).toBeInTheDocument();
+  });
+
+  // Tests that FacilityButton component filters out past bookings
+  it("test_filter_past_bookings", () => {
+    const { queryByText } = render(
+      <FacilityButton facilityId={1} facilityName="Test Facility" />
+    );
+    expect(queryByText("Venue:")).toBeFalsy();
+  });
+
   //   // Tests that FacilityButton component cancels a booking and updates state and database
   //   it('test_cancel_booking', async () => {
   //       const onCancel = jest.fn();

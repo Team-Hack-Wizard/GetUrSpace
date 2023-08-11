@@ -6,13 +6,17 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  FlatList,
 } from "react-native";
 
 export default function NumberDropDown({ onSelectNumber, maxNumber }) {
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   // options range from 1 to maxNumber
-  const options = Array.from(Array(maxNumber).keys()).map((i) => i + 1);
+  // this needs to be improved
+  // problem: when maxNumber was very larger like 15000, the app will crash
+  // solution: use FlatList instead of ScrollView (maybe)
+  const options = Array.from(Array(Number(maxNumber)).keys()).map((i) => i + 1);
 
   const handleOptionPress = (option) => {
     setModalVisible(false);
@@ -34,17 +38,19 @@ export default function NumberDropDown({ onSelectNumber, maxNumber }) {
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <ScrollView decelerationRate={0.2}>
-              {options.map((option) => (
+            <FlatList
+              data={options}
+              keyExtractor={(item) => item.toString()}
+              renderItem={({ item }) => (
                 <TouchableOpacity
-                  key={option}
+                  key={item}
                   style={styles.option}
-                  onPress={() => handleOptionPress(option)}
+                  onPress={() => handleOptionPress(item)}
                 >
-                  <Text style={styles.optionText}>{option}</Text>
+                  <Text style={styles.optionText}>{item}</Text>
                 </TouchableOpacity>
-              ))}
-            </ScrollView>
+              )}
+            />
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}

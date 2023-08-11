@@ -1,0 +1,19 @@
+- You do not need to touch the screen after starting the app
+- each test are connected to each other, no setups are required other than verifying email after registration test.
+
+Please run the tests in this Order:
+[Users]
+- registrationTest
+NOTE: Please only verify emaail after registration test
+- loginTest
+NOTE: booking dates need to be changed/updated in bookFacilityTest
+- bookFacilityTest
+- viewBookingTest
+ 
+Admin:
+- manageGroupsTest
+- manageFacilityTest
+- adminBookingTest (includes viewBookings)
+
+#
+

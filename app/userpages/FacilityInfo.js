@@ -25,7 +25,7 @@ export default function FacilityInfo({ navigation, route }) {
   const [locationText, setLocationText] = useState("");
   const [loading, setLoading] = useState(true)
 
-  numberToTime = (num) => {
+  const numberToTime = (num) => {
     return num < 10 ? "0" + num + ":00" : num + ":00";
   }
 
