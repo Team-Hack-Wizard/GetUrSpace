@@ -1,0 +1,30 @@
+appId: <app>
+---
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Login"
+- assertVisible:
+    text: "Facilities"
+    index: 0
+- assertVisible: "NUS"
+- assertVisible: "Gym"
+- assertVisible: "Study Room"
+- assertVisible: "Meeting Room"
+- assertVisible: "MPSH"
+- tapOn: "Bookings"
+- tapOn: "Profile"
+- assertVisible:
+    text: "Profile"
+    index: 0
+- assertVisible: "e0934116@u.nus.edu"
+- assertVisible: "NUS"
+- assertVisible: "user"
+- assertVisible:
+    text: "Profile"
+    index: 0
+- tapOn: "Facilities"
+- assertVisible:
+    text: "Facilities"
+    index: 0

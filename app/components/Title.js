@@ -3,8 +3,8 @@ import React from "react";
 
 export default function Title({ data }) {
   return (
-    <View style={styles.box}>
-      <Text style={styles.text}>{data}</Text>
+    <View style={styles.box} testID="box">
+      <Text style={styles.text} testID='text'>{data}</Text>
     </View>
   );
 }

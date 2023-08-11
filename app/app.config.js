@@ -4,6 +4,11 @@ export default {
   "expo": {
     "name": "app",
     "slug": "app",
+    "plugins": ["@config-plugins/detox"],
+    // "updates": {
+    //   "url": "https://u.expo.dev/f833bfb5-302d-4c83-a8cb-eeafbdb8594c"
+    // },
+    //"runtimeVersion": "exposdk:48.0.0",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
@@ -14,7 +19,7 @@ export default {
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/**/*"
     ],
     "ios": {
       "supportsTablet": true,

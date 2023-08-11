@@ -3,8 +3,9 @@ import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function CalendarDropDown({ selectedDate, onSelectDate }) {
+export default function CalendarDropDown({ onSelectDate }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [chosenDate, setChosenDate] = useState('');
 
   const toggleCalendar = () => {
     setModalVisible(!modalVisible);
@@ -13,6 +14,7 @@ export default function CalendarDropDown({ selectedDate, onSelectDate }) {
   // pass the booking date back to the parent component
   const handleDayPress = (day) => {
     onSelectDate(day.dateString);
+    setChosenDate(day.dateString);
     toggleCalendar();
   };
 
@@ -28,7 +30,7 @@ export default function CalendarDropDown({ selectedDate, onSelectDate }) {
     <>
       <TouchableOpacity style={styles.dropdown} onPress={toggleCalendar}>
         <Text style={styles.dropdownText}>
-          {selectedDate ? selectedDate : "Select Date"}
+          {chosenDate ? chosenDate : "Select Date"}
         </Text>
       </TouchableOpacity>
 
@@ -38,10 +40,11 @@ export default function CalendarDropDown({ selectedDate, onSelectDate }) {
             <Ionicons name="ios-close" size={32} color="black" />
           </TouchableOpacity>
           <Calendar
+            testID="calendar"
             style={styles.calendar}
             onDayPress={handleDayPress}
             markedDates={{
-              [selectedDate]: { selected: true },
+              [chosenDate]: { selected: true },
             }}
             minDate={minDate}
           />

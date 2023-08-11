@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import Msg from "../functions/Msg";
-import moment from "moment";
+import moment from "moment-timezone";
 
 // facility button receives bookings array where each booking is an object of booking info
 // eg: [{facilityId: , facilityName: , groupId: , groupName: ,
@@ -112,7 +112,10 @@ export default function FacilityButton({ facilityId, facilityName, searchQuery }
             {bookings
               .filter((booking) =>
                 searchQuery === "" ||
-                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
+                booking.userEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                booking.date == (searchQuery) ||
+                booking.time == (searchQuery) ||
+                booking.facilityNumber == (searchQuery)
               )
               .map((booking) => (
                 <BookingItem

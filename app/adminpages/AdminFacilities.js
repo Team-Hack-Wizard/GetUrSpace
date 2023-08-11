@@ -23,11 +23,11 @@ export default function AdminFacilities() {
   //  data: [{id: 1, name: "facility1"}, ...]}, ...]
   const [listData, setListData] = useState([]);
 
-  const userRef = doc(db, "users", auth.currentUser.uid);
   // get snapshots of user's groups
   // listens to any changes to user's groups
   // gets all the groups and facilities info from the user document
   useEffect(() => {
+    const userRef = doc(db, "users", auth.currentUser.uid);
     const unsubscribe = onSnapshot(userRef, async (userDoc) => {
       if (!loading) setLoading(true);
       const groups = await userDoc.get("groups");
@@ -46,7 +46,7 @@ export default function AdminFacilities() {
                 return {
                   id: facility.facilityId,
                   name: facility.facilityName,
-                  number: facilityDoc.data().number,
+                  number: await facilityDoc.get("number"),
                 };
               })
             ),
@@ -126,7 +126,7 @@ export default function AdminFacilities() {
               navigation={navigation}
               data={{ groupId: item.id, groupName: item.name }}
             />
-            {item.data.map((facility) => {
+            {item && item.data.map((facility) => {
               if (
                 searchQuery === "" ||
                 facility.name.toLowerCase().includes(searchQuery.toLowerCase())

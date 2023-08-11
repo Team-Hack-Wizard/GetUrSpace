@@ -139,11 +139,6 @@ export default function RegisterPage({ navigation }) {
         errMsg(error.message);
         console.log(error.code);
         console.log(error.message);
-        deleteUser(auth.currentUser).catch((error) => {
-          console.log("Error deleting user");
-          console.log(error.code);
-          console.log(error.message);
-        });
       }
     }
   };

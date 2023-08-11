@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
 import React from "react";
-import { renderIcon } from "../functions";
+import { Msg, renderIcon } from "../functions";
 
 export default function BookingItem({
   id,
@@ -15,21 +15,10 @@ export default function BookingItem({
 }) {
   //confirmation message to cancel booking
   const handleCancelBooking = () => {
-    Alert.alert(
+    Msg(
       "Cancel Booking",
       "Are you sure you want to cancel this booking?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Confirm",
-          style: "destructive",
-          onPress: () => onCancel(id, facilityId, facilityNumber, date, time),
-        },
-      ],
-      { cancelable: false }
+      () => onCancel(id, facilityId, facilityNumber, date, time)
     );
   };
 
@@ -39,7 +28,6 @@ export default function BookingItem({
     return timeString;
   };
 
-  
   return (
     <View style={styles.box}>
       {facility && (

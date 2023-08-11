@@ -150,7 +150,6 @@ export default function BookFacility({ navigation, route }) {
       <View>
         <Text style={styles.text}>From Date:</Text>
         <CalendarDropDown
-          selectedDate={fromDate}
           onSelectDate={handleFromDateSelect}
         />
       </View>
@@ -158,7 +157,6 @@ export default function BookFacility({ navigation, route }) {
       <View>
         <Text style={styles.text}>To Date:</Text>
         <CalendarDropDown
-          selectedDate={toDate}
           onSelectDate={handleToDateSelect}
         />
       </View>

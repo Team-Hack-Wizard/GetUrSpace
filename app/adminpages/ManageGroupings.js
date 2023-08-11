@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -32,24 +33,17 @@ export default function ManageGroupings({ navigation, route }) {
   const [newFacility, setNewFacility] = useState("");
   const [removeFacility, setRemoveFacility] = useState("");
   const { groupId, groupName } = route.params;
+  const [loading, setLoading] = useState(false);
 
   const handleReturn = () => {
     navigation.goBack();
   };
 
   const handleSubmit = () => {
-    Alert.alert(
+    Msg(
       "Confirm Changes?",
       "Are you sure you want to make these changes? Some of the changes may be irreversible.",
-      [
-        {
-          text: "Cancel",
-          //onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => handleConfirm() },
-      ],
-      { cancelable: false }
+      () => handleConfirm()
     );
   };
 
@@ -57,33 +51,35 @@ export default function ManageGroupings({ navigation, route }) {
   // In this funciton, it will check if the input for each field is non-empty
   // If it is, it will call the respective function to add/remove the user/facility or to rename the group
   const handleConfirm = async () => {
+    if (!loading) setLoading(true);
     const groupRef = doc(db, "groups", groupId);
     const groupDoc = await getDoc(groupRef);
-    const users = groupDoc.get("users");
+    const userIds = await groupDoc.get("users");
 
     if (addUser) {
-      addUserFunction(addUser, groupRef, groupDoc, users);
+      addUserFunction(addUser, groupRef, groupDoc, userIds);
     }
 
     if (removeUser) {
-      removeUserFunction(removeUser, groupRef, groupDoc, users);
+      removeUserFunction(removeUser, groupRef, groupDoc, userIds);
     }
 
     if (newGroupName) {
-      renameGroupFunction(newGroupName, groupRef, groupDoc, users);
+      renameGroupFunction(newGroupName, groupRef, groupDoc, userIds);
     }
 
     if (newFacility) {
-      addFacilityFunction(newFacility, groupRef, groupDoc, users);
+      addFacilityFunction(newFacility, groupRef, groupDoc, userIds);
     }
 
     if (removeFacility) {
-      removeFacilityFunction(removeFacility, groupRef, groupDoc, users);
+      removeFacilityFunction(removeFacility, groupRef, groupDoc, userIds);
     }
+    if (loading) setLoading(false);
   };
 
-  async function addUserFunction(addUser, groupRef, groupDoc, users) {
-    //console.log(`Add user: ${addUser}`);
+  async function addUserFunction(addUser, groupRef, groupDoc, userIds) {
+
     // add user to group in database
     // query email to get the userdoc
     const q = query(collection(db, "users"), where("email", "==", addUser));
@@ -98,7 +94,7 @@ export default function ManageGroupings({ navigation, route }) {
       // check through the group's users array, if user alr in the group, do nothing
       // else add user to the group in field users array in groupdoc
       // then need to update the group and facilities info in that user
-      if (!users.includes(uid)) {
+      if (!userIds.includes(uid)) {
         updateDoc(groupRef, {
           users: arrayUnion(uid),
         });
@@ -108,23 +104,29 @@ export default function ManageGroupings({ navigation, route }) {
           groupName: groupName,
           facilities: [],
         };
-        // get the info of facilities from thisGroup and add to thisGroup
-        for (const facilityId of groupDoc.get("facilities")) {
+        const facilityIds = await groupDoc.get("facilities")
+        // get the info of facilities from groupDoc and add to thisGroup
+        for (const facilityId of facilityIds) {
+          console.log("facilityId: " + facilityId);
           const facilityDoc = await getDoc(doc(db, "facilities", facilityId));
           const facility = {
             facilityId: facilityId,
-            facilityName: facilityDoc.get("name"),
+            facilityName: await facilityDoc.get("name"),
           };
           thisGroup.facilities.push(facility);
         }
+        console.log(thisGroup);
         updateDoc(userRef, {
           groups: arrayUnion(thisGroup),
         });
       }
     });
+
+    setAddUser("");
+    Msg("", "User added to group successfully");
   }
 
-  async function removeUserFunction(removeUser, groupRef, groupDoc, users) {
+  async function removeUserFunction(removeUser, groupRef, groupDoc, userIds) {
     // console.log(`Remove user: ${removeUser}`);
     // query email to get the userdoc
     const q = query(collection(db, "users"), where("email", "==", removeUser));
@@ -154,8 +156,10 @@ export default function ManageGroupings({ navigation, route }) {
           groups: newUserGroups,
         });
 
+        setRemoveUser("");
         Msg("", "User removed from group successfully");
       } else {
+        setRemoveUser("");
         Msg("Error", "User does not exist in the group!");
         return;
       }
@@ -173,11 +177,11 @@ export default function ManageGroupings({ navigation, route }) {
     users.forEach(async (uid) => {
       const userRef = doc(db, "users", uid);
       const userDoc = await getDoc(userRef);
-      const userGroups = userDoc.get("groups");
+      const userGroups = await userDoc.get("groups");
       updateDoc(userRef, {
         groups: userGroups.map((group) => {
           // map the group with same group id to the new group name
-          if (group.groupId == groupId) {
+          if (group.groupId == groupRef.id) {
             const newGroup = {
               ...group,
               groupName: newGroupName,
@@ -208,7 +212,7 @@ export default function ManageGroupings({ navigation, route }) {
         groupName: newGroupName,
       });
     });
-
+    setGroupName("");
     Msg("", "Group name updated successfully");
   }
 
@@ -241,15 +245,19 @@ export default function ManageGroupings({ navigation, route }) {
       collection(db, "facilities"),
       InitialFacility
     );
+    // add new facility to group document
+    updateDoc(groupRef, {
+      facilities: arrayUnion(newFacilityRef.id),
+    });
     // update users in the group with the new facility
     // for each user in the group, add facility to the userDoc's groups array
     users.forEach(async (uid) => {
       const userRef = doc(db, "users", uid);
       const userDoc = await getDoc(userRef);
-      const userGroups = userDoc.get("groups");
+      const userGroups = await userDoc.get("groups");
       updateDoc(userRef, {
         groups: userGroups.map((group) => {
-          // map the group with same group id to the new group name
+          // map the group with same group id to the new group 
           if (group.groupId == groupId) {
             const newGroup = {
               ...group,
@@ -267,7 +275,7 @@ export default function ManageGroupings({ navigation, route }) {
         }),
       });
     });
-
+    setNewFacility("");
     Msg("", "Facility added successfully");
   }
 
@@ -304,7 +312,7 @@ export default function ManageGroupings({ navigation, route }) {
       users.forEach(async (uid) => {
         const userRef = doc(db, "users", uid);
         const userDoc = await getDoc(userRef);
-        const userGroups = userDoc.get("groups");
+        const userGroups = await userDoc.get("groups");
         updateDoc(userRef, {
           groups: userGroups.map((group) => {
             // remove the facilityId from the array
@@ -327,7 +335,7 @@ export default function ManageGroupings({ navigation, route }) {
       // deleting facility document
       deleteDoc(doc(db, "facilities", facilityId));
     });
-
+    setRemoveFacility("");
     Msg("", "Facility removed successfully");
 
     // // deleting all bookings of this facility
@@ -357,7 +365,9 @@ export default function ManageGroupings({ navigation, route }) {
         <TextInput
           style={styles.input}
           selectionColor="#094074"
+          placeholder="Add by nus email"
           onChangeText={(text) => setAddUser(text)}
+          value={addUser}
         />
       </View>
 
@@ -366,7 +376,9 @@ export default function ManageGroupings({ navigation, route }) {
         <TextInput
           style={styles.input}
           selectionColor="#094074"
+          placeholder="Remove by nus email"
           onChangeText={(text) => setRemoveUser(text)}
+          value={removeUser}
         />
       </View>
 
@@ -375,25 +387,31 @@ export default function ManageGroupings({ navigation, route }) {
         <TextInput
           style={styles.input}
           selectionColor="#094074"
+          placeholder="Enter New Group Name"
           onChangeText={(text) => setGroupName(text)}
+          value={newGroupName}
         />
       </View>
 
       <View>
-        <Text style={styles.text}>Add Facility (Enter Name)</Text>
+        <Text style={styles.text}>Add Facility</Text>
         <TextInput
           style={styles.input}
           selectionColor="#094074"
+          placeholder="Enter New Group Name"
           onChangeText={(text) => setNewFacility(text)}
+          value={newFacility}
         />
       </View>
 
       <View>
-        <Text style={styles.text}>Remove Facility (Enter Name)</Text>
+        <Text style={styles.text}>Remove Facility</Text>
         <TextInput
           style={styles.input}
           selectionColor="#094074"
+          placeholder="Enter Name of Facility to Remove"
           onChangeText={(text) => setRemoveFacility(text)}
+          value={removeFacility}
         />
       </View>
 

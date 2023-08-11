@@ -15,6 +15,7 @@ export default function TimeBtn({ id, time, selected, onPress }) {
   return (
     <View style={styles.buttonWrapper}>
       <TouchableOpacity
+        testID="button"
         style={[
           styles.button,
           { backgroundColor: selected ? "#094074" : "#E6E6E6" },

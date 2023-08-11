@@ -44,7 +44,7 @@ export default function TimeDropDown({
         </Text>
       </TouchableOpacity>
 
-      <Modal visible={modalVisible} animationType="slide">
+      <Modal testID="modal" visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <ScrollView decelerationRate={0.2}>
