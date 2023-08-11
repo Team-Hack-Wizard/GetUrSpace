@@ -1,0 +1,125 @@
+# admin account already logged in 
+appId: <app>
+---
+- tapOn: "MPH"
+- tapOn:
+    text: "Select Date"
+    index: 0
+- tapOn:
+    text: "31"
+    index: 1
+- tapOn: "Select Date"
+- tapOn:
+    text: "31"
+    index: 1
+- tapOn:
+    text: "Select Timing"
+    index: 0
+- tapOn: "08:00"
+- tapOn: "Select Timing"
+- tapOn: "12:00"
+- tapOn: "Select Number"
+- tapOn: "3"
+- tapOn: "Book"
+- tapOn: "OK"
+- tapOn: "Bookings"
+- tapOn: "MPH"
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-08-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 08:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-08-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 09:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-08-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 10:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-08-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 11:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+# delete the bookings made 
+- tapOn:
+    text: "Cancel"
+    index: 0
+- tapOn: "OK"
+- tapOn: "OK"
+- tapOn:
+    text: "Cancel"
+    index: 0
+- tapOn: "OK"
+- tapOn: "OK"
+- tapOn:
+    text: "Cancel"
+    index: 0
+- tapOn: "OK"
+- tapOn: "OK"
+- tapOn: "Cancel"
+- tapOn: "OK"
+- tapOn: "OK"
+- tapOn: "MPH"
+#################
+- tapOn: ""
+- tapOn: "MPH"
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-07-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 08:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-07-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 09:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-07-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 10:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+- scrollUntilVisible:
+    element:
+      text: "Date: 2023-07-31"
+- scrollUntilVisible:
+    element:
+      text: "time: 11:00"
+- scrollUntilVisible:
+    element:
+      text: "Facility Number: 3"
+- tapOn: "Facilities"
+

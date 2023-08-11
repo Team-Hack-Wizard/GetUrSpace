@@ -1,0 +1,144 @@
+# admin account already logged in 
+appId: <app>
+---
+- tapOn: "MPSH"
+- tapOn: ""
+# initial settings
+- assertVisible: "2"
+- assertVisible: "1"
+- assertVisible: "7"
+- assertVisible: "MPSH"
+- assertVisible: "8"
+- assertVisible: "08:00"
+- assertVisible: "23:00"
+- assertVisible: "UTown"
+# change settings
+- tapOn: "2"
+- "eraseText"
+- inputText: 4
+- tapOn:
+    text: "1"
+    index: 0
+- "eraseText"
+- inputText: 5
+- tapOn: "7"
+- "eraseText"
+- inputText: 6
+- tapOn: "MPSH"
+- inputText: " hall"
+- "scroll"
+- tapOn: "8"
+- "eraseText"
+- inputText: 7
+- tapOn: "08:00"
+- tapOn: "08:00"
+- tapOn: "00:00"
+- tapOn: "23:00"
+- scrollUntilVisible:
+    element:
+      text: "22:00"
+- tapOn: "22:00"
+- tapOn: "UTown"
+- inputText: " somewhere"
+- tapOn: "Back"
+- tapOn: "Save"
+- assertVisible: "Are you sure you want to make these changes?For fields that are\
+    \ amended, all changes will be made together. "
+- tapOn: "OK"
+- assertVisible: "Changes saved successfully."
+- tapOn: "OK"
+- assertVisible: "MPSH hall"
+- tapOn: "MPSH hall"
+- tapOn: ""
+# check settings are saved successfully
+- assertVisible: "4"
+- assertVisible: "5"
+- assertVisible: "6"
+- assertVisible: "MPSH hall"
+- assertVisible: "7"
+- assertVisible: "00:00"
+- assertVisible: "22:00"
+- assertVisible: "UTown somewhere"
+- tapOn: "Profile"
+- tapOn: "Log Out"
+# log in to normal user account to check for facility info
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Login"
+# check for the facility info saved
+- assertVisible: "MPSH hall"
+- tapOn: "MPSH hall"
+- assertVisible: "Facility Info"
+- assertVisible: "UTown somewhere"
+- assertVisible: "4"
+- assertVisible: "5"
+- assertVisible: "6"
+- assertVisible: "7"
+- assertVisible: "00:00"
+- tapOn: "6"
+- assertVisible: "22:00"
+- tapOn: "Proceed"
+# the below date needs to be updated
+- tapOn: "6"
+- tapOn: "Continue"
+- scrollUntilVisible:
+    element:
+      text: "Facility 7"
+- "scroll"
+- assertVisible: "Facility 7"
+- assertNotVisible: "Facility 8"
+- assertVisible: "00:00"
+- assertVisible:
+    text: "22:00"
+    index: 1
+- assertNotVisible: "23:00"
+- tapOn: "Profile"
+- tapOn: "Log Out"
+# go back to admin account
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "hcm@u.nus.edu"
+- tapOn: "Enter your password"
+- inputText: "qwerqwer"
+- tapOn: "Login"
+# return all changes to original state
+- tapOn: "MPSH hall"
+- tapOn: ""
+- tapOn: "4"
+- "eraseText"
+- inputText: 2
+- tapOn:
+    text: "5"
+    index: 0
+- "eraseText"
+- inputText: 1
+- tapOn:
+    text: "6"
+    index: 0
+- "eraseText"
+- inputText: 7
+- tapOn: "MPSH hall"
+- eraseText: "4"
+- tapOn:
+    text: "7"
+    index: 1
+- "eraseText"
+- inputText: 8
+- tapOn: "Back"
+- tapOn: "00:00"
+- scrollUntilVisible:
+    element:
+      text: "08:00"
+- tapOn: "08:00"
+- tapOn: "22:00"
+- scrollUntilVisible:
+    element:
+      text: "23:00"
+- tapOn: "23:00"
+- tapOn: "UTown somewhere"
+- eraseText: "9"
+- tapOn: "Back"
+- tapOn: "Save"
+- tapOn: "OK"
+- tapOn: "OK"

@@ -55,31 +55,54 @@ export default function ManageGroupings({ navigation, route }) {
     const groupRef = doc(db, "groups", groupId);
     const groupDoc = await getDoc(groupRef);
     const userIds = await groupDoc.get("users");
+    let changed = false;
+    let count = 0;
+    if (addUser) count++;
+    if (removeUser) count++;
+    if (newGroupName) count++;
+    if (newFacility) count++;
+    if (removeFacility) count++;
+    if (count === 0) {
+      Msg("Error", "Please enter at least one field!");
+      return;
+    } else if (count > 1) {
+      Msg("Sorry", "We can only support one change at a time!");
+      return;
+    }
 
     if (addUser) {
       addUserFunction(addUser, groupRef, groupDoc, userIds);
+      changed = true;
     }
 
     if (removeUser) {
-      removeUserFunction(removeUser, groupRef, groupDoc, userIds);
+      removeUserFunction(removeUser, groupRef, groupDoc, userIds, removeUser);
+      changed = true;
     }
 
     if (newGroupName) {
       renameGroupFunction(newGroupName, groupRef, groupDoc, userIds);
+      changed = true;
     }
 
     if (newFacility) {
       addFacilityFunction(newFacility, groupRef, groupDoc, userIds);
+      changed = true;
     }
 
     if (removeFacility) {
       removeFacilityFunction(removeFacility, groupRef, groupDoc, userIds);
+      changed = true;
     }
     if (loading) setLoading(false);
+    if (changed) {
+      Msg("", "Changes saved successfully");
+    }
   };
 
-  async function addUserFunction(addUser, groupRef, groupDoc, userIds) {
+  // addUserFunction and removeUserFunction has an warning: TypeError: Cannot convert undefined value to object
 
+  async function addUserFunction(addUser, groupRef, groupDoc, userIds) {
     // add user to group in database
     // query email to get the userdoc
     const q = query(collection(db, "users"), where("email", "==", addUser));
@@ -95,7 +118,7 @@ export default function ManageGroupings({ navigation, route }) {
       // else add user to the group in field users array in groupdoc
       // then need to update the group and facilities info in that user
       if (!userIds.includes(uid)) {
-        updateDoc(groupRef, {
+        await updateDoc(groupRef, {
           users: arrayUnion(uid),
         });
         // update group and facilities info in that user
@@ -104,26 +127,25 @@ export default function ManageGroupings({ navigation, route }) {
           groupName: groupName,
           facilities: [],
         };
-        const facilityIds = await groupDoc.get("facilities")
+        const facilityIds = await groupDoc.get("facilities");
         // get the info of facilities from groupDoc and add to thisGroup
         for (const facilityId of facilityIds) {
-          console.log("facilityId: " + facilityId);
+          //console.log("facilityId: " + facilityId);
           const facilityDoc = await getDoc(doc(db, "facilities", facilityId));
+          // console.log("facilityDoc: " + facilityDoc);
           const facility = {
             facilityId: facilityId,
             facilityName: await facilityDoc.get("name"),
           };
           thisGroup.facilities.push(facility);
         }
-        console.log(thisGroup);
-        updateDoc(userRef, {
+        // console.log("thisGroup: " + JSON.stringify(thisGroup));
+        await updateDoc(userRef, {
           groups: arrayUnion(thisGroup),
         });
       }
     });
-
     setAddUser("");
-    Msg("", "User added to group successfully");
   }
 
   async function removeUserFunction(removeUser, groupRef, groupDoc, userIds) {
@@ -139,31 +161,28 @@ export default function ManageGroupings({ navigation, route }) {
     querySnapshot.forEach(async (userDoc) => {
       const uid = userDoc.id;
       const userRef = doc(db, "users", uid);
-      const users = groupDoc.get("users");
+      const users = await groupDoc.get("users");
       // if user is in the group, attempt to remove
       if (users.includes(uid)) {
-        updateDoc(groupRef, {
+        await updateDoc(groupRef, {
           users: arrayRemove(uid),
         });
         // then need to update the group and facilities info in that user
-        const userGroups = [...userDoc.get("groups")];
+        const userGroups = [...(await userDoc.get("groups"))];
         // problem: filter not removing the group
         const newUserGroups = userGroups.filter(
           (group) => group.groupId !== groupId
         );
-        console.log(newUserGroups);
-        updateDoc(userRef, {
+        //console.log("new User group: " + JSON.stringify(newUserGroups));
+        await updateDoc(userRef, {
           groups: newUserGroups,
         });
-
-        setRemoveUser("");
-        Msg("", "User removed from group successfully");
       } else {
-        setRemoveUser("");
+        // not inside the group do nothing
         Msg("Error", "User does not exist in the group!");
-        return;
       }
     });
+    setRemoveUser("");
   }
 
   async function renameGroupFunction(newGroupName, groupRef, groupDoc, users) {
@@ -182,11 +201,10 @@ export default function ManageGroupings({ navigation, route }) {
         groups: userGroups.map((group) => {
           // map the group with same group id to the new group name
           if (group.groupId == groupRef.id) {
-            const newGroup = {
+            return {
               ...group,
               groupName: newGroupName,
             };
-            return newGroup;
           }
           return group;
         }),
@@ -213,7 +231,6 @@ export default function ManageGroupings({ navigation, route }) {
       });
     });
     setGroupName("");
-    Msg("", "Group name updated successfully");
   }
 
   async function addFacilityFunction(newFacility, groupRef, groupDoc, users) {
@@ -257,7 +274,7 @@ export default function ManageGroupings({ navigation, route }) {
       const userGroups = await userDoc.get("groups");
       updateDoc(userRef, {
         groups: userGroups.map((group) => {
-          // map the group with same group id to the new group 
+          // map the group with same group id to the new group
           if (group.groupId == groupId) {
             const newGroup = {
               ...group,
@@ -276,7 +293,6 @@ export default function ManageGroupings({ navigation, route }) {
       });
     });
     setNewFacility("");
-    Msg("", "Facility added successfully");
   }
 
   // TO BE REVIEWED: Settle issues when removing a facility that is currently booked
@@ -317,7 +333,7 @@ export default function ManageGroupings({ navigation, route }) {
           groups: userGroups.map((group) => {
             // remove the facilityId from the array
             if (group.groupId == groupId) {
-              const newGroup = {
+              return {
                 ...group,
                 facilities: group.facilities.filter(
                   (facility) =>
@@ -325,7 +341,6 @@ export default function ManageGroupings({ navigation, route }) {
                     facility.facilityId !== facilityId
                 ),
               };
-              return newGroup;
             }
             return group;
           }),
@@ -336,7 +351,6 @@ export default function ManageGroupings({ navigation, route }) {
       deleteDoc(doc(db, "facilities", facilityId));
     });
     setRemoveFacility("");
-    Msg("", "Facility removed successfully");
 
     // // deleting all bookings of this facility
     // const bookingsQuery = query(collection(db, "bookings"), where("facilityId", "==", facilityId));
@@ -398,7 +412,7 @@ export default function ManageGroupings({ navigation, route }) {
         <TextInput
           style={styles.input}
           selectionColor="#094074"
-          placeholder="Enter New Group Name"
+          placeholder="Enter New Facility Name"
           onChangeText={(text) => setNewFacility(text)}
           value={newFacility}
         />

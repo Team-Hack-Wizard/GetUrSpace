@@ -46,6 +46,11 @@ appId: <app>
 - assertVisible: "Passwords do not match!"
 - tapOn: "OK"
 - tapOn:
+# note that tapOn text in maestro somehow only goes to the center.
+# so to delete a text from the back, we have to tapOn point.
+# But this also means that the point value needs to be adjusted on different phone/emulator
+# try running maestro studtio and try to click the confirm password field
+# replace the 44% value only, keep the 70%.
     point: "70%,44%"
 - eraseText: 0
 - tapOn:
@@ -54,6 +59,21 @@ appId: <app>
 - assertVisible: "Verification email has been sent, please verify your email before\
     \ logging in!"
 - tapOn: "OK"
+- tapOn: "Register"
+- tapOn: "Enter your UserID@u.nus.edu"
+- inputText: "e0934116@u.nus.edu"
+- tapOn: "Enter your name"
+- inputText: "Tester0"
+- tapOn: "Enter your password"
+- inputText: "Password"
+- tapOn: "Confirm your password"
+- inputText: "Password"
+- tapOn:
+    text: "Register"
+    index: 1
+- assertVisible: "Firebase: Error (auth/email-already-in-use)."
+- tapOn: "OK"
+- tapOn: "Login"
 - tapOn: "Enter your UserID@u.nus.edu"
 - inputText: "e0934116@u.nus.edu"
 - tapOn: "Enter your password"
@@ -72,19 +92,3 @@ appId: <app>
 - tapOn: "Login"
 - assertVisible: "Please verify your email before logging in!"
 - tapOn: "OK"
-- tapOn: "Register"
-- tapOn: "Enter your UserID@u.nus.edu"
-- inputText: "e0934116@u.nus.edu"
-- tapOn: "Enter your name"
-- inputText: "Tester0"
-- tapOn: "Enter your password"
-- inputText: "Password"
-- tapOn: "Confirm your password"
-- inputText: "Password"
-- tapOn:
-    text: "Register"
-    index: 1
-- assertVisible: "Firebase: Error (auth/email-already-in-use)."
-- tapOn: "OK"
-- tapOn: "Login"
-- assertVisible: "Log in"

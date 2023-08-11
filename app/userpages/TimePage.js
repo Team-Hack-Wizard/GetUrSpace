@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -60,7 +61,7 @@ export default function TimePage({ navigation, route }) {
   // Use transactions to write booking into firestore to prevent race conditions
   const handleBook = async () => {
     let newBooking = { ...curBooking };
-    selectedValue = selected.split(" ");
+    const selectedValue = selected.split(" ");
     newBooking.time = parseInt(available[selectedValue[0]][selectedValue[1]]);
     newBooking.facilityNumber = parseInt(selected.charAt(0)) + 1;
 
@@ -280,24 +281,26 @@ export default function TimePage({ navigation, route }) {
           <Text style={styles.selectTime}>Select Time</Text>
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false} decelerationRate={0.2}>
-          {available.map((timeArr, index1) => (
-            <View key={index1}>
-              <Title data={"Facility " + (index1 + 1)} />
+        <FlatList
+          data={available}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <View key={index}>
+              <Title data={"Facility " + (index + 1)} />
               <View style={styles.buttonGroup}>
-                {timeArr.map((time, index2) => (
+                {item.map((time, index2) => (
                   <TimeBtn
-                    key={`${index1} ${index2}`}
-                    id={`${index1} ${index2}`}
+                    key={`${index} ${index2}`}
+                    id={`${index} ${index2}`}
                     time={time}
-                    selected={selected === `${index1} ${index2}`}
+                    selected={selected === `${index} ${index2}`}
                     onPress={handlePress}
                   />
                 ))}
               </View>
             </View>
-          ))}
-        </ScrollView>
+          )}
+        />
 
         <TouchableOpacity
           style={[

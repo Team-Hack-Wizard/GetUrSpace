@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { auth } from "../config/firebase";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import Msg from "../functions/Msg";
 
 export default function LoginPage({ navigation }) {
@@ -30,7 +30,12 @@ export default function LoginPage({ navigation }) {
     } else {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          if (!userCredential.user.emailVerified) {
+          if (
+            // list of exluded email addresses to bypass email verification
+            email !== "test_account@random.com" &&
+            email !== "test_account2@random.com" &&
+            !userCredential.user.emailVerified
+          ) {
             Msg("", "Please verify your email before logging in!");
             auth.signOut();
           }
@@ -76,8 +81,15 @@ export default function LoginPage({ navigation }) {
           secureTextEntry={securePassword}
           selectionColor="red"
         />
-        <TouchableOpacity style={styles.passwordIcon} onPress={toggleSecurePassword}>
-          <Feather name={securePassword ? "eye" : "eye-off"} size={24} color="grey" />
+        <TouchableOpacity
+          style={styles.passwordIcon}
+          onPress={toggleSecurePassword}
+        >
+          <Feather
+            name={securePassword ? "eye" : "eye-off"}
+            size={24}
+            color="grey"
+          />
         </TouchableOpacity>
       </View>
 

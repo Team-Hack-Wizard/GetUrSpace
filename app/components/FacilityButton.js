@@ -35,7 +35,9 @@ export default function FacilityButton({ facilityId, facilityName, searchQuery }
       orderBy("date"),
       orderBy("time")
     );
+    console.log("entered useEffect")
     const unsubscribe = onSnapshot(bookingQuery, (querySnapshot) => {
+      console.log("entered callback")
       let newBookings = [];
       querySnapshot.forEach((bookingDoc) => {
         const booking = bookingDoc.data();
@@ -53,6 +55,7 @@ export default function FacilityButton({ facilityId, facilityName, searchQuery }
           });
         }
       });
+      console.log(newBookings);
       setBookings(newBookings);
     });
     if (loading) setLoading(false);

@@ -1,5 +1,6 @@
 appId: <app>
 ---
+# login admin account
 - tapOn: "Enter your UserID@u.nus.edu"
 - inputText: "hcm@u.nus.edu"
 - tapOn: "Enter your password"
@@ -14,6 +15,7 @@ appId: <app>
 - tapOn:
     text: ""
     index: 1
+# attempt to add users
 - tapOn: "Add by nus email"
 - inputText: "e0934116@u.nus.edu"
 - tapOn: "Back"
@@ -21,26 +23,32 @@ appId: <app>
 - assertVisible: "Are you sure you want to make these changes? Some of the changes\
     \ may be irreversible."
 - tapOn: "OK"
-- assertVisible: "User added to group successfully"
+- assertVisible: "Changes saved successfully"
 - tapOn: "OK"
+# change group name
 - tapOn:
     text: "Enter New Group Name"
-    index: 0
 - inputText: "PGP"
+- tapOn: "Back"
+- tapOn: "Submit"
+- tapOn: "OK"
+- tapOn: "OK"
+# add facility
 - tapOn:
-    text: "Enter New Group Name"
-    index: 1
+    text: "Enter New Facility Name"
 - inputText: "test"
 - tapOn: "Back"
 - tapOn: "Submit"
 - tapOn: "OK"
 - tapOn: "OK"
+# check that changes are saved
 - tapOn: "Facilities"
 - assertVisible: "PGP"
 - assertVisible: "test"
 - tapOn: "Profile"
 - assertVisible: "NUS, PGP"
 - tapOn: "Log Out"
+# check the changes on user's side
 - tapOn: "Enter your UserID@u.nus.edu"
 - inputText: "e0934116@u.nus.edu"
 - tapOn: "Enter your password"
@@ -52,9 +60,11 @@ appId: <app>
 - assertVisible:
     text: "Gym"
     index: 1
+# check changes in profile page for groups
 - tapOn: "Profile"
 - assertVisible: "NUS, PGP"
 - tapOn: "Log Out"
+# log in admin account again
 - tapOn: "Enter your UserID@u.nus.edu"
 - inputText: "hcm@u.nus.edu"
 - tapOn: "Enter your password"
@@ -63,19 +73,35 @@ appId: <app>
 - tapOn:
     text: ""
     index: 1
+# test remove user from group
 - tapOn: "Remove by nus email"
 - inputText: "e0934116@u.nus.edu"
+- tapOn: "Back"
+- tapOn: "Submit"
+- tapOn: "OK"
+- tapOn: "OK"
+# just to change the group name back
 - tapOn: "Enter New Group Name"
 - inputText: "PGPR"
+- tapOn: "Back"
+- tapOn: "Submit"
+- tapOn: "OK"
+- tapOn: "OK"
+# remove the newly added group
 - tapOn: "Enter Name of Facility to Remove"
 - inputText: "test"
 - tapOn: "Back"
 - tapOn: "Submit"
 - tapOn: "OK"
 - tapOn: "OK"
+# press back arrow 
 - tapOn: ""
+# check test facility is removed
+- assertNotVisible: "test"
 - tapOn: "Profile"
 - tapOn: "Log Out"
+# check that user is indeed removed from the group
+# (note that we dont check that test is removed also on Users side for convenience)
 - tapOn: "Enter your UserID@u.nus.edu"
 - inputText: "e0934116@u.nus.edu"
 - tapOn: "Enter your password"
@@ -83,9 +109,11 @@ appId: <app>
 - tapOn: "Login"
 - tapOn: "Profile"
 - assertVisible: "NUS"
+- assertNotVisible: "PGPR"
 - tapOn: "Log Out"
 - tapOn: "Enter your UserID@u.nus.edu"
 - inputText: "hcm@u.nus.edu"
 - tapOn: "Enter your password"
 - inputText: "qwerqwer"
 - tapOn: "Login"
+# log in admin account again
